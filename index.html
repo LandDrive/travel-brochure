@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Three Families, One Summer — Destination Brochure</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    color-scheme: light dark;
+    --dark:#1D4237; --accent:#B92D63; --sun:#E0A03A;
+
+    --page:#E9E7DC;
+    --text:#0E211B;
+    --text-2:rgba(14,33,27,.82);
+    --text-3:rgba(14,33,27,.66);
+    --rule:rgba(14,33,27,.18);
+    --panel:#DAD8C9;
+    --price:#6E2233;
+    --facts-bg:#0E211B;
+
+    --on-band:#F1EFE6;
+    --on-band-2:rgba(241,239,230,.88);
+    --on-band-3:rgba(241,239,230,.72);
+
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Karla",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --page:#141510;
+      --text:#EDEBE1;
+      --text-2:rgba(237,235,225,.86);
+      --text-3:rgba(237,235,225,.68);
+      --rule:rgba(237,235,225,.22);
+      --panel:rgba(237,235,225,.09);
+      --price:#E6A9B6;
+      --facts-bg:#0A0B07;
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--page);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.6}
+  img{max-width:100%;display:block}
+
+  h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1;margin:0;color:var(--text)}
+  h2{font-size:clamp(1.7rem,4.4vw,2.6rem);letter-spacing:-.015em}
+  h3{font-size:1.2rem}
+  p{margin:0 0 1em;color:var(--text-2)}
+  p:last-child{margin-bottom:0}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+
+  .masthead{background:var(--dark);padding-top:22px;position:sticky;top:0;z-index:900;box-shadow:0 1px 0 rgba(0,0,0,.35);transition:background .35s ease}
+  .brandline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding-bottom:16px}
+  .brandline b{font-family:var(--serif);font-weight:600;font-size:1.16rem;color:var(--on-band)}
+  .brandline span{font-size:.86rem;color:var(--on-band-3)}
+
+  .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{font-family:var(--sans);font-size:.95rem;font-weight:500;color:var(--on-band-3);background:transparent;border:0;border-bottom:3px solid transparent;padding:10px 16px 12px;cursor:pointer;white-space:nowrap}
+  .tab:hover{color:var(--on-band)}
+  .tab[aria-selected="true"]{color:var(--on-band);border-bottom-color:var(--sun)}
+  .tab.ghost{font-style:italic}
+  .tab:focus-visible{outline:2px solid var(--sun);outline-offset:-3px}
+
+  .hero{background:var(--dark);padding:clamp(34px,7vw,62px) 0 0}
+  .hero h1{font-size:clamp(2.5rem,8vw,4.6rem);line-height:.98;letter-spacing:-.03em;margin:0 0 18px;color:var(--on-band)}
+  .hero .lede{max-width:34em;font-size:clamp(1.02rem,2.3vw,1.2rem);color:var(--on-band-2);margin-bottom:30px}
+
+  .section-figure{margin:0;padding-bottom:8px}
+  .section-figure figcaption{font-size:.88rem;color:var(--on-band-3);padding:12px 0 26px;max-width:46em}
+  .xsec{width:100%;height:auto;overflow:visible}
+
+  .facts{background:var(--facts-bg)}
+  .facts .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(241,239,230,.22);padding:0}
+  .fact{background:var(--facts-bg);padding:20px clamp(14px,2.4vw,26px)}
+  .fact dt{font-size:.82rem;color:var(--on-band-3);margin-bottom:4px}
+  .fact dd{margin:0;font-family:var(--serif);font-size:1.16rem;font-weight:600;line-height:1.2;color:var(--on-band)}
+
+  section.band{padding:clamp(44px,7vw,80px) 0;background:var(--page)}
+  section.band + section.band{border-top:1px solid var(--rule)}
+  .band.dark{background:var(--dark);border-top:0}
+  .band.dark h2,.band.dark h3{color:var(--on-band)}
+  .band.dark p,.band.dark li,.band.dark td,.band.dark th,.band.dark .intro{color:var(--on-band-2)}
+  .intro{max-width:40em;margin-top:14px;color:var(--text-2)}
+
+  .maptools{display:flex;gap:8px;margin:26px 0 10px;flex-wrap:wrap;align-items:center}
+  .maptools .lbl{font-size:.87rem;color:var(--text-3);margin-right:4px}
+  .mbtn{font-family:var(--sans);font-size:.85rem;font-weight:500;background:transparent;color:var(--text);border:1px solid var(--rule);border-radius:2px;padding:6px 13px;cursor:pointer}
+  .mbtn[aria-pressed="true"]{background:var(--text);color:var(--page);border-color:var(--text)}
+  .mbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .gmap{width:100%;height:min(62vh,470px);border:1px solid var(--rule);display:block;background:var(--panel)}
+  .pinmap{height:min(62vh,470px);margin-top:12px;background:var(--panel);border:1px solid var(--rule)}
+  .leaflet-container{font-family:var(--sans)}
+  .pin-pop{color:#222}
+  .pin-pop b{font-family:var(--serif);font-size:1.05rem;display:block;margin-bottom:3px;color:#111}
+  .pin-pop small{color:#555;display:block;margin-bottom:6px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px;font-size:.88rem;color:var(--text-2)}
+  .legend i{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:7px}
+  .caption{font-size:.88rem;color:var(--text-3);margin-top:10px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:28px 24px;margin-top:34px}
+  .card figure{margin:0}
+  .shot{aspect-ratio:4/3;background:rgba(241,239,230,.14);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .shot img{width:100%;height:100%;object-fit:cover}
+  .shot .fallback{font-family:var(--serif);font-size:.95rem;text-align:center;padding:0 18px;color:var(--on-band-3)}
+  .card h3{margin:14px 0 6px}
+  .card p{font-size:.95rem}
+  .tagline{font-size:.83rem;color:var(--sun);margin-bottom:2px;font-weight:500}
+
+  .bases{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));margin-top:32px;border-top:1px solid var(--rule)}
+  .base{padding:24px 26px 24px 0;border-bottom:1px solid var(--rule)}
+  .bases .base + .base{border-left:1px solid var(--rule);padding-left:26px}
+  .base h3{margin-bottom:8px}
+  .base p{font-size:.95rem}
+  .base .price{font-family:var(--serif);font-size:1.02rem;color:var(--price);margin-top:10px}
+
+  .days{margin-top:34px;border-left:2px solid rgba(241,239,230,.35)}
+  .day{display:grid;grid-template-columns:78px 1fr;gap:0 22px;padding:16px 0 16px 22px}
+  .day + .day{border-top:1px solid rgba(241,239,230,.2)}
+  .day .n{font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--sun);line-height:1;padding-top:2px}
+  .day .n small{display:block;font-family:var(--sans);font-size:.74rem;color:var(--on-band-3);font-weight:400;margin-top:4px}
+  .day h3{font-size:1.08rem;margin-bottom:5px}
+  .day p{font-size:.95rem}
+
+  table{width:100%;border-collapse:collapse;margin-top:28px;font-size:.96rem}
+  th,td{text-align:left;padding:13px 12px 13px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--text-2)}
+  th{font-weight:700;font-size:.85rem;color:var(--text-3)}
+  td strong{color:var(--text)}
+  td.num{text-align:right;font-family:var(--serif);font-weight:600;white-space:nowrap;padding-right:0;color:var(--text)}
+  tr.total td{border-bottom:0;border-top:2px solid var(--text);font-size:1.05rem;padding-top:15px}
+  tr.total td.num{font-size:1.2rem;color:var(--price)}
+  .note{font-size:.9rem;color:var(--text-2);margin-top:14px;max-width:46em}
+
+  .compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:24px;margin-top:32px}
+  .opt{border-top:3px solid var(--rule);padding-top:16px}
+  .opt.pick{border-top-color:var(--accent)}
+  .opt h3{margin-bottom:8px}
+  .opt p{font-size:.94rem}
+
+  .twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px 44px;margin-top:30px}
+  .twocol h3{margin-bottom:10px}
+  .twocol ul{margin:0;padding-left:1.1em;font-size:.95rem}
+  .twocol li{margin-bottom:8px}
+
+  .empty{padding:clamp(60px,12vw,120px) 0;text-align:center}
+  .empty p{max-width:30em;margin:14px auto 0}
+
+  footer{background:var(--facts-bg);color:var(--on-band-3);padding:34px 0;font-size:.86rem}
+  [hidden]{display:none !important}
+
+  @media (max-width:760px){
+    .facts .wrap{grid-template-columns:repeat(2,1fr)}
+    .bases .base + .base{border-left:0;padding-left:0}
+    .base{padding-right:0}
+    .day{grid-template-columns:58px 1fr;padding-left:16px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brandline">
+      <b>Three families, one summer</b>
+      <span>Destination shortlist &middot; 12 travellers, ages 10&ndash;18</span>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main id="panels"></main>
+
+<footer>
+  <div class="wrap">
+    Costs are planning estimates and move with booking timing. Photographs from Wikimedia Commons; maps &copy; Google and &copy; OpenStreetMap contributors.
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* Add a destination: push one object into DESTINATIONS.
+   Pin an exact photo to a card with  photo:"https://..."  */
+
+const DESTINATIONS = [
+
+/* ============================ MADEIRA ============================ */
+{
+  id:"madeira", tab:"Madeira", title:"Madeira",
+  theme:{dark:"#1D4237", accent:"#B92D63", sun:"#E0A03A"},
+  lede:"An Atlantic island that climbs from sea level to 1,818 metres in the space of a short drive. Whale boats in the morning, a cloud-forest water channel in the afternoon, twelve people around one table at night.",
+  facts:[["Best window","Late June – early July"],["Length","8–10 days, one base"],
+         ["Door to door","8–12 hrs via Lisbon"],["Per person","$1,850 – $3,100"]],
+  hero:{type:"profile"},
+  gmap:{q:"Madeira, Portugal", z:9},
+  map:{center:[32.75,-16.96], zoom:10},
+  pinKinds:{base:{color:"#B92D63",label:"Where you'd stay"},
+            do:{color:"#2E6E75",label:"What you'd do"},
+            add:{color:"#E0A03A",label:"Optional add-on"}},
+  pins:[
+    {name:"Funchal",lat:32.6669,lon:-16.9241,kind:"base",note:"The capital and the easy answer. Old Town, the farmers' market, the marina, the Lido sea pools and the Monte cable car all within reach without a car."},
+    {name:"Calheta",lat:32.7189,lon:-17.1789,kind:"base",note:"Sunniest corner of the island and the only real sandy beach. Quieter, villa country, about 45 minutes from Funchal."},
+    {name:"Ponta do Sol",lat:32.6797,lon:-17.1017,kind:"base",note:"Small south-coast town with the island's best sunshine record. Middle ground between Funchal buzz and Calheta calm."},
+    {name:"Santa Cruz",lat:32.6875,lon:-16.7936,kind:"base",note:"Ten minutes from the airport. Worth considering only if your flights land late or leave early."},
+    {name:"Porto Moniz",lat:32.8667,lon:-17.1667,kind:"do",note:"Volcanic rock pools filled by the Atlantic. Enclosed, lifeguarded, and the single best swim on the island for a mixed-age group."},
+    {name:"Pico do Arieiro",lat:32.7353,lon:-16.9283,kind:"do",note:"1,818 m. Drive up in the dark for sunrise above the cloud layer, or hike the ridge toward Pico Ruivo if the teens are keen."},
+    {name:"Monte",lat:32.6667,lon:-16.9000,kind:"do",note:"Cable car up, tropical garden at the top, then two men in straw hats push you back down the hill in a wicker sled."},
+    {name:"Ponta de São Lourenço",lat:32.7442,lon:-16.6939,kind:"do",note:"The bare, wind-scoured eastern tip. An easy out-and-back walk with cliffs on both sides — the most drama per unit of effort."},
+    {name:"Câmara de Lobos",lat:32.6500,lon:-16.9833,kind:"do",note:"Working fishing harbour just west of Funchal, painted boats and all. Best late-afternoon stop on the island."},
+    {name:"Santana",lat:32.8000,lon:-16.8833,kind:"do",note:"North coast, triangular thatched houses, and the gateway to the laurel forest levadas."},
+    {name:"Porto Santo",lat:33.0667,lon:-16.3333,kind:"add",note:"Nine kilometres of sand, two and a half hours by ferry. The obvious two-day add-on if anyone wants a beach holiday inside the adventure holiday."}
+  ],
+  doing:[
+    {wiki:"Levada",flickr:"levada,madeira",tag:"Half day, ages 10+",name:"Walk a levada",
+     text:"Madeira is laced with hand-cut irrigation channels that contour around the mountains at a near-constant gradient. Hours of forest walking with almost no climbing — exactly what you want with a spread of ages. Pick Levada dos Balcões or Levada do Rei and skip the ones with tunnels and drop-offs."},
+    {wiki:"Porto Moniz",flickr:"porto+moniz,madeira",tag:"Half day, everyone",name:"Swim the lava pools",
+     text:"At Porto Moniz the Atlantic fills a field of black volcanic rock. Enclosed, calm and supervised, so the ten-year-olds and the seventeen-year-olds can both be left alone in it. Bring water shoes."},
+    {wiki:"Monte, Madeira",flickr:"monte+toboggan,madeira",tag:"Half day, everyone",name:"Cable car and toboggan",
+     text:"Ride up over Funchal's rooftops to Monte, walk the tropical garden, then take a wicker sled two kilometres back down the public road, steered by two men in straw hats. Faintly ridiculous, and nobody forgets it."},
+    {wiki:"Whale watching",flickr:"whale+watching,madeira",tag:"3–4 hrs, everyone",name:"Get out on the water",
+     text:"Resident pilot whales and several dolphin species sit just offshore year-round, so sightings are unusually reliable. Book a smaller RIB for the teens and a catamaran if anyone in the group gets seasick."},
+    {wiki:"Pico do Arieiro",flickr:"pico+arieiro,madeira",tag:"Pre-dawn, the keen ones",name:"Sunrise above the clouds",
+     text:"Leave at 4am, drive to 1,818 metres, and watch the sun come up over a solid floor of cloud with the peaks poking through. Go with a driver so nobody handles mountain switchbacks in the dark."},
+    {wiki:"Canyoning",flickr:"canyoning,waterfall",tag:"Half day, usually 14+",name:"Canyoning",
+     text:"Guided descents through the island's ravines: abseiling down waterfalls, jumping into pools, sliding rock chutes. Most operators take 14 and up, so this is the one activity that splits the group — plan a pool day for whoever stays back."},
+    {wiki:"Funchal",flickr:"funchal,madeira",tag:"Any evening",name:"Funchal old town",
+     text:"The Zona Velha's painted doors, the Mercado dos Lavradores in the morning, the CR7 museum for whoever cares, and enough restaurants at enough price points to feed twelve without booking six weeks out."},
+    {wiki:"Madeira wine",flickr:"madeira+wine,cellar",tag:"Two hours, adults",name:"A tasting for the grown-ups",
+     text:"Blandy's Wine Lodge in central Funchal runs short tours through the heated attics where Madeira is aged. Slot it against a pool afternoon so the parents get a turn."}
+  ],
+  bases:[
+    {name:"Funchal",text:"Least driving, most choice. Walk to dinner, put the teens on the cable car, reach the marina for boat trips without organising cars. Rentals are smaller and closer together here — expect two or three apartments rather than one villa.",price:"Two 6-guest apartments, ~€2,400–3,600/wk total"},
+    {name:"Calheta & Ponta do Sol",text:"The sunny southwest. Where the big villas with private pools are, so it's the best shot at putting all twelve under one roof with a barbecue and somewhere for kids to disappear to. You will be driving 40–50 minutes to Funchal.",price:"One 10–12 guest villa, ~€3,000–5,000/wk"},
+    {name:"Santa Cruz & Machico",text:"East side, minutes from the airport, closest to Ponta de São Lourenço. More residential and less scenic, but the cheapest of the three and sensible if your flights are awkward.",price:"Two villas, ~€2,000–3,200/wk total"}
+  ],
+  itinerary:[
+    {n:1,d:"Arrive",h:"Land, collect vans, settle",p:"Airport is 20 minutes from Funchal. Groceries, unpack, an easy dinner nearby. Nobody attempts anything ambitious on day one."},
+    {n:2,d:"Funchal",h:"Old town and the sea pools",p:"Mercado dos Lavradores in the morning, wander the Zona Velha, then the Lido complex or Praia Formosa for the afternoon."},
+    {n:3,d:"Monte",h:"Cable car, garden, toboggan",p:"Up mid-morning, tropical garden, sled down after lunch. Câmara de Lobos harbour on the way home for sunset."},
+    {n:4,d:"Ocean",h:"Whale and dolphin boat",p:"Morning sailing out of Funchal marina. Free afternoon at the villa; optional sunset catamaran for anyone with energy left."},
+    {n:5,d:"Forest",h:"Levada walk",p:"Drive north to Ribeiro Frio or Rabaçal. Three to four hours of level forest walking, lunch at the trailhead café."},
+    {n:6,d:"North coast",h:"Porto Moniz and Santana",p:"Full loop of the northwest with viewpoint stops, the lava pools for a long swim, thatched houses at Santana on the way back."},
+    {n:7,d:"Split day",h:"Canyoning, or a slower alternative",p:"Teens 14+ go canyoning or coasteering with a guide. Everyone else takes the Ponta de São Lourenço walk or a pool day."},
+    {n:8,d:"High ground",h:"Arieiro sunrise, then farewell dinner",p:"Pre-dawn drive to the peak for whoever wants it, back by mid-morning for a slow last day. Book dinner for twelve in Funchal."},
+    {n:"+2",d:"Optional",h:"Porto Santo",p:"Ferry over for two nights of flat sand and nothing to organise. Worth it if you're staying the full two weeks."}
+  ],
+  budget:{rows:[
+      ["Flights, East Coast to Funchal","$700 – $1,000","Round trip via Lisbon, booked 3–4 months out. No nonstop from the US, and no Space-A route that gets you closer than mainland Europe."],
+      ["Accommodation, 8–10 nights","$600 – $1,200","Villa or apartment cost split twelve ways. The biggest lever you have."],
+      ["Vans, fuel, transfers","$120 – $200","Two 7-seaters for the week, plus airport transfers if you'd rather not drive on arrival day."],
+      ["Guided activities","$150 – $350","Boat trip, a jeep day, canyoning for the teens. Everything else on the list is free or nearly free."],
+      ["Food","$280 – $550","A mix of villa cooking and eating out. Madeira restaurants run noticeably cheaper than mainland Portugal."]],
+    total:["Per person, 8–10 days","$1,850 – $3,100"],
+    note:"For twelve people that's roughly $22,000 at the low end and $37,000 at the high end. The spread is almost entirely accommodation and how many guided days you buy — self-catering in one villa and doing your own driving lands you near the bottom."},
+  alt:{heading:"The cruise version, honestly compared",
+    intro:"A 7-night Atlantic or western Mediterranean sailing out of Lisbon, Barcelona or Southampton can include Funchal, Tenerife and Gran Canaria. It solves different problems than it creates.",
+    pro:["One booking covers beds, most meals and transport between islands — no villa hunt, no van rental, no group logistics.",
+         "Teen clubs, sports decks and waterslides give the 10-to-18 range somewhere to go that isn't with their parents.",
+         "Kids-sail-free and third-and-fourth-guest promotions can pull the per-person cost well below a villa week.",
+         "Cabin doors close. Twelve people sharing one house for ten days is not restful for everyone."],
+    con:["You get roughly eight hours in Madeira instead of eight days. Levadas, the north coast and the peaks are all out of reach on a port call.",
+         "Summer 2028 itineraries aren't published yet, and Madeira drops off Atlantic routes in some seasons — you may end up with the Canaries instead.",
+         "Twelve people means four to six cabins. Getting them adjacent takes early booking or a suite.",
+         "Excursions, drinks packages and specialty dining are where the advertised fare stops being the real fare."],
+    verdict:"If the group's priority is time together with minimal organising, the cruise wins. If it's the island itself — the hiking, the water, the sense of having actually been somewhere — the land trip wins, and it isn't close."},
+  compare:{heading:"Why Madeira and not the Azores or the Canaries",options:[
+    {name:"Madeira",pick:true,text:"One island, everything within an hour, and a genuine mix of mountain, forest, ocean and town. The easiest of the three to run with three families and no advance recon."},
+    {name:"Azores",text:"More dramatic and more raw — crater lakes, volcanoes, thermal springs. But the good stuff is spread across several islands, which means inter-island flights, more packing days, and weather that cancels plans."},
+    {name:"Canaries",text:"Better beaches and more reliable heat, especially Tenerife and Gran Canaria. Also more built-up and resort-shaped. Good if the group's real want is sun and a pool; less good if it's adventure."}
+  ]}
+},
+
+/* ============================ GREECE ============================ */
+{
+  id:"greece", tab:"Greece", title:"Greece",
+  theme:{dark:"#143845", accent:"#B0343A", sun:"#D9A441"},
+  lede:"Four bases, three boats and one flight home. Athens for the ancient stuff, a working Cycladic island for the beaches, Santorini for the two days everyone photographs, and Crete for the part the teenagers actually remember.",
+  facts:[["Best window","Late June"],["Length","12 days, four bases"],
+         ["Door to door","10–12 hrs, nonstop to Athens"],["Per person","$2,500 – $4,400"]],
+  hero:{type:"hops", caption:"Four bases in twelve days, joined by three high-speed ferries and one short flight. Every crossing is under four hours, and nobody packs more than three times.",
+    legs:[
+      {name:"Athens",sub:"Piraeus",nights:"3 nights",x:6},
+      {name:"Naxos",sub:"or Paros",nights:"4 nights",x:31,in:"Ferry 3h45 · €65–108"},
+      {name:"Santorini",sub:"Fira / Oia",nights:"2 nights",x:56,in:"Ferry 2h · €55–90"},
+      {name:"Crete",sub:"Heraklion",nights:"3 nights",x:80,in:"Ferry 2h · €60–95"},
+      {name:"Home",sub:"via Athens",nights:"",x:97,in:"Fly 55min · €45–100"}
+    ]},
+  gmap:{q:"Aegean Sea, Greece", z:6},
+  map:{center:[36.8,25.0], zoom:6},
+  pinKinds:{base:{color:"#B0343A",label:"Where you'd stay"},
+            do:{color:"#2E7E96",label:"What you'd do"},
+            add:{color:"#D9A441",label:"Cruise port / optional"}},
+  pins:[
+    {name:"Athens",lat:37.9838,lon:23.7275,kind:"base",note:"Three nights is right: the Acropolis and its museum, the Ancient Agora, a food walk through Plaka, and a rooftop dinner. Any longer in July heat and the group will wilt."},
+    {name:"Naxos",lat:37.1036,lon:25.3766,kind:"base",note:"The value pick and the best all-round family island. Long sandy beaches you can park at, windsurfing off Mikri Vigla, mountain villages inland, and prices roughly half of Santorini."},
+    {name:"Paros",lat:37.0856,lon:25.1494,kind:"base",note:"Naxos's alternative — slightly livelier, slightly pricier, equally good beaches. Pick one, not both."},
+    {name:"Santorini",lat:36.4167,lon:25.4333,kind:"base",note:"Two nights, not four. The caldera view is worth the trip and the crowds and prices are worth escaping. Stay in Imerovigli or Firostefani rather than Oia."},
+    {name:"Heraklion",lat:35.3387,lon:25.1442,kind:"base",note:"Crete's practical base: the airport for the flight home, Knossos twenty minutes away, and the archaeological museum that makes sense of it."},
+    {name:"Chania",lat:35.5138,lon:24.0180,kind:"base",note:"Western Crete and the prettier town — a Venetian harbour, a walkable old quarter, and the Samaria trailhead within reach. Three hours from Heraklion airport."},
+    {name:"Knossos",lat:35.2980,lon:25.1630,kind:"do",note:"The Bronze Age palace, 3,500 years old and partly reconstructed. Go early, go with a guide, and see the museum in Heraklion the same day or it won't land."},
+    {name:"Samaria Gorge",lat:35.2833,lon:23.9500,kind:"do",note:"Sixteen kilometres downhill through a limestone gorge, ending at a beach and a boat out. Six hours, no shade at the end, and genuinely hard — but the standout day for anyone who can do it."},
+    {name:"Cape Sounion",lat:37.6503,lon:24.0245,kind:"do",note:"The Temple of Poseidon on a headland ninety minutes from Athens. Time it for sunset and it's the best evening of the Athens leg."},
+    {name:"Delos",lat:37.3936,lon:25.2686,kind:"do",note:"An entire uninhabited island that is one archaeological site, thirty minutes by boat from Mykonos. Half a day, no shade, worth it."},
+    {name:"Mykonos",lat:37.4467,lon:25.3289,kind:"add",note:"On most cruise itineraries and skippable on a land trip. Windmills, beach clubs and prices to match. Go for Delos, not for Mykonos."},
+    {name:"Rhodes",lat:36.4349,lon:28.2176,kind:"add",note:"A walled medieval city you can still walk around, plus beaches. Too far east for the land itinerary; a highlight if you end up cruising."}
+  ],
+  doing:[
+    {wiki:"Acropolis of Athens",flickr:"acropolis,athens",tag:"Half day, everyone",name:"The Acropolis, early",
+     text:"Be at the gate when it opens. By eleven the marble is hot, the crowds are three deep and nobody is enjoying themselves. Pair it with the Acropolis Museum in the afternoon — air conditioned, and it explains what you just walked through."},
+    {wiki:"Santorini",flickr:"santorini,oia",tag:"Two days",name:"The caldera",
+     text:"Santorini is a drowned volcano and the whole town sits on its rim. Walk the Fira-to-Oia path in the early evening, take the boat out to the crater and the hot springs, and accept that you're paying a premium for a view. Two nights is enough."},
+    {wiki:"Naxos",flickr:"naxos,beach",tag:"Four days",name:"Naxos beaches and villages",
+     text:"Plaka and Agios Prokopios are long, sandy and shallow. Mikri Vigla has the windsurfing and kitesurfing schools. Inland, Halki and Apiranthos are marble villages with tavernas and no bus tours. This is the leg where the trip gets cheap and relaxed."},
+    {wiki:"Knossos",flickr:"knossos,crete",tag:"Half day, ages 10+",name:"Knossos and the Minoans",
+     text:"Europe's oldest city, and the labyrinth story starts here. The 1900s reconstruction is controversial and also the reason it's legible to a twelve-year-old rather than a field of foundations."},
+    {wiki:"Samaria Gorge",flickr:"samaria+gorge,crete",tag:"Full day, fit walkers",name:"Walk the Samaria Gorge",
+     text:"Sixteen kilometres, all downhill, through a gorge that narrows to three metres wide between 300-metre walls. It ends at a beach where you catch a boat out. The hardest thing on the list and the one people talk about afterwards."},
+    {wiki:"Chania",flickr:"chania,venetian+harbour",tag:"Two evenings",name:"Chania's old harbour",
+     text:"A Venetian lighthouse, an Ottoman mosque, and a horseshoe of waterfront tavernas. The best place in Greece to sit twelve people down at one long table outside."},
+    {wiki:"Delos",flickr:"delos,greece",tag:"Half day",name:"Delos",
+     text:"Sacred to Apollo, once the richest port in the Aegean, now an empty island of ruins with a caretaker and a boat schedule. Mosaic floors, a terrace of marble lions, and nobody living there since antiquity."},
+    {wiki:"Cape Sounion",flickr:"sounion,poseidon+temple",tag:"Evening",name:"Sunset at Sounion",
+     text:"Fifteen Doric columns on a cliff above the Aegean, ninety minutes down the coast from Athens. Hire a van, go late, eat on the way back."}
+  ],
+  bases:[
+    {name:"Athens",text:"Three nights in Koukaki or Plaka puts you walking distance from the Acropolis. Apartments here are cheap by European capital standards and two three-bedroom flats will house the group easily. Skip the rental car — you won't want it in Athens.",price:"Two 3-bed apartments, ~€500–800/night total"},
+    {name:"Naxos or Paros",text:"The value leg. Villas with pools within walking distance of a beach are genuinely affordable here, and you'll want a car or two for the villages. Four nights is the right length — long enough to stop moving.",price:"One 10–12 guest villa, ~€450–850/night"},
+    {name:"Santorini",text:"The expensive leg, so keep it short. Caldera-view rooms in Imerovigli cost roughly double the same room in Fira and triple what you'd pay on Naxos. Two nights, then move on.",price:"Three or four rooms, ~€700–1,400/night total"},
+    {name:"Crete",text:"Big island, so pick an end. Heraklion is practical and close to Knossos; Chania is prettier and closer to Samaria. Villas are plentiful and reasonable at both. You will want two vans here.",price:"One large villa, ~€400–800/night"}
+  ],
+  itinerary:[
+    {n:1,d:"Athens",h:"Land, settle, eat late",p:"Airport to the city in 45 minutes — the X95 bus is €5.50, the metro €9, a flat-rate taxi €40. Nobody attempts the Acropolis on arrival day."},
+    {n:2,d:"Athens",h:"Acropolis at opening, museum after",p:"Gate at 8am, Parthenon and the Erechtheion before the heat. Acropolis Museum in the afternoon, Anafiotika at dusk."},
+    {n:3,d:"Athens",h:"Agora, market, then Sounion",p:"Ancient Agora in the morning, the central market for lunch, van down the coast for sunset at the Temple of Poseidon."},
+    {n:4,d:"Naxos",h:"Morning ferry, afternoon beach",p:"X96 bus straight to Piraeus port gates (€5.50, 60–90 min), then about four hours on the high-speed. Collect cars and swim before dinner."},
+    {n:5,d:"Naxos",h:"Beach day",p:"Plaka or Agios Prokopios. Windsurfing or kitesurfing lessons at Mikri Vigla for whoever wants them."},
+    {n:6,d:"Naxos",h:"Mountain villages",p:"Drive inland to Halki and Apiranthos, the Temple of Demeter on the way, lunch in a village square. Back to the coast by four."},
+    {n:7,d:"Naxos",h:"Free day",p:"Boat trip, the Portara at sunset, or nothing at all. Build one of these into every leg or the trip becomes a forced march."},
+    {n:8,d:"Santorini",h:"Ferry across, caldera walk",p:"Two hours by boat. Check in at Imerovigli, then the Fira-to-Oia path in the cool of the evening."},
+    {n:9,d:"Santorini",h:"Volcano boat and hot springs",p:"Morning sailing into the crater, swim at the hot springs, back for an early dinner. Red Beach if there's time."},
+    {n:10,d:"Crete",h:"Ferry to Heraklion, Knossos",p:"Two hours to Crete. Knossos in the late afternoon when the tour buses have gone, or first thing tomorrow if the boat runs late."},
+    {n:11,d:"Crete",h:"Split day: gorge or coast",p:"Samaria for the walkers — a full six-hour day ending at the beach. Everyone else takes Chania's old town and a swim at Elafonissi."},
+    {n:12,d:"Crete",h:"Slow day, then farewell dinner",p:"Beach, archaeological museum, or the Venetian harbour. One long table booked for twelve."},
+    {n:13,d:"Home",h:"Fly Heraklion to Athens and on",p:"Fifty-five minutes to Athens and connect. Or an overnight in Athens if the timings are ugly."}
+  ],
+  budget:{rows:[
+      ["Flights, East Coast to Athens","$650 – $1,100","Nonstop from JFK, EWR and BOS in summer. There is no usable Space-A route into Greece — AMC's European legs end at Ramstein, Rota or Sigonella, and you would still buy a commercial ticket or a long ferry from there. See the Germany tab if the military-travel angle is the draw."],
+      ["Accommodation, 12 nights","$850 – $1,600","Four bases split twelve ways. Santorini alone is roughly a quarter of this for two of the twelve nights."],
+      ["Ferries and the flight home","$250 – $400","Three high-speed crossings plus Heraklion to Athens. Conventional ferries cost about half and take about twice as long."],
+      ["Cars, vans, local transport","$120 – $220","Two cars on Naxos, two vans on Crete, airport and port buses in Athens at €5.50 a head. No rental car needed in Athens."],
+      ["Sites, guides and activities","$180 – $350","Acropolis, Knossos, Delos, the volcano boat, Samaria, plus windsurfing lessons if you want them."],
+      ["Food","$450 – $780","Twelve days at roughly $38–65 a head, mixing villa cooking with tavernas. Athens and the smaller islands are cheap; Santorini is not."]],
+    total:["Per person, 12–13 days","$2,500 – $4,400"],
+    note:"Roughly $30,000 to $53,000 for twelve people. Two things move this number more than anything else: how many nights you spend on Santorini, and whether you cook. Cutting Santorini to two nights and self-catering on Naxos and Crete is worth several hundred dollars a head."},
+  alt:{heading:"The cruise version, honestly compared",
+    intro:"A 7-night Greek-islands sailing round-trip from Piraeus hits Mykonos, Santorini, Rhodes and Crete, and most lines will sell you two nights in Athens either side. Fares run roughly $1,400–$2,000 a head before flights.",
+    pro:["Four to seven islands in one week, with none of the ferry booking, villa hunting or car rental that the land trip requires.",
+         "Meals and beds are bundled, so the cost is knowable up front — which matters when three families are splitting it.",
+         "Teen spaces, pools and sports decks mean the 10-to-18 range has somewhere to be that isn't a taverna.",
+         "Athens is easy to bolt on at either end, so you don't lose the Acropolis."],
+    con:["Santorini gets you eight hours, Crete gets you six. Knossos or a beach — not both. Samaria is impossible.",
+         "Port days in July mean arriving with six thousand other people. Oia at 2pm is a different place than Oia at 8pm.",
+         "$1,400–$2,000 a head is before flights, excursions, drinks and specialty dining, and those are where the real number lives.",
+         "Twelve people is four to six cabins. Adjacent rooms need booking a year out."],
+    verdict:"The cruise is the better deal and the worse trip. If the group can absorb 12 days and the logistics of four bases, the land version gives you Greece rather than a tour of its harbours — and it costs more mostly because it lasts longer."},
+  compare:{heading:"Three ways to do this",options:[
+    {name:"Land, 12–13 days",pick:true,text:"Athens, Naxos, Santorini, Crete. Deepest version, most flexible, best for a group that wants hiking, villages and villa kitchens. Most work to plan."},
+    {name:"Cruise, 7 nights + Athens",text:"Piraeus round-trip through Mykonos, Santorini, Rhodes and Crete with two nights in Athens either side. Least planning, most islands, shallowest."},
+    {name:"Hybrid, 11–12 days",text:"Two nights Athens, the 7-night cruise, then three nights on Crete or Naxos after you disembark. The ship's easy group time plus one island you actually stay on."}
+  ]}
+},
+
+/* ============================ JAPAN ============================ */
+{
+  id:"japan", tab:"Japan", title:"Japan",
+  theme:{dark:"#1A2440", accent:"#C4402A", sun:"#D9A441"},
+  lede:"The only destination on this list where the transport is itself an attraction. Four cities on the Golden Route, all of them connected by a train that takes 320 km/h for granted and arrives when it says it will.",
+  facts:[["Best window","Late June"],["Length","14 days, four bases"],
+         ["Door to door","13–14 hrs, nonstop to Tokyo"],["Per person","$3,100 – $5,100"]],
+  hero:{type:"hops", caption:"Four bases in fourteen days on one rail line. The longest leg is under three hours and every one is a reserved seat with luggage space — the reason Japan works with twelve people and no rental cars.",
+    legs:[
+      {name:"Tokyo",sub:"Shinjuku / Asakusa",nights:"4 nights",x:6},
+      {name:"Kyoto",sub:"via Shinkansen",nights:"3 nights",x:30,in:"Nozomi 2h13 · ¥14,000"},
+      {name:"Osaka",sub:"Shin-Osaka",nights:"2 nights",x:52,in:"15 min · ¥1,450"},
+      {name:"Hiroshima",sub:"+ Miyajima",nights:"2 nights",x:75,in:"Nozomi 1h25 · ¥10,500"},
+      {name:"Tokyo",sub:"and home",nights:"3 nights",x:96,in:"Nozomi 4h · ¥19,000"}
+    ]},
+  gmap:{q:"Japan", z:5},
+  map:{center:[35.2,136.5], zoom:5},
+  pinKinds:{base:{color:"#C4402A",label:"Where you'd stay"},
+            do:{color:"#3E7FA6",label:"What you'd do"},
+            add:{color:"#D9A441",label:"Optional add-on"}},
+  pins:[
+    {name:"Tokyo",lat:35.6762,lon:139.6503,kind:"base",note:"Four nights at the start and three at the end, bookending the trip. Shinjuku for transport links, Asakusa for a quieter and cheaper base near Senso-ji."},
+    {name:"Kyoto",lat:35.0116,lon:135.7681,kind:"base",note:"Three nights. Two thousand temples, a bamboo grove, and the geisha district — but also the most crowded city in Japan in summer. Book accommodation here first; it sells out earliest."},
+    {name:"Osaka",lat:34.6937,lon:135.5023,kind:"base",note:"Two nights, mostly for the food and for Universal Studios. Louder, cheaper and friendlier than Kyoto, and only fifteen minutes away by train."},
+    {name:"Hiroshima",lat:34.3853,lon:132.4553,kind:"base",note:"Two nights. The Peace Memorial Museum is the most affecting thing on this itinerary and the reason to come this far west."},
+    {name:"Miyajima",lat:34.2957,lon:132.3197,kind:"do",note:"The floating torii gate, an island of tame deer, and a cable car up Mount Misen. Forty minutes from Hiroshima including the ferry."},
+    {name:"Nara",lat:34.6851,lon:135.8048,kind:"do",note:"Day trip from Kyoto or Osaka. A 15-metre bronze Buddha in the world's largest wooden building, and 1,200 deer that bow for crackers."},
+    {name:"Hakone",lat:35.2324,lon:139.1069,kind:"do",note:"Overnight or day trip from Tokyo. Hot springs, a pirate ship on a caldera lake, and the best chance of actually seeing Mount Fuji."},
+    {name:"Nikko",lat:36.7199,lon:139.6982,kind:"do",note:"Two hours north of Tokyo. Lacquered shrines in cedar forest, waterfalls, and noticeably cooler air than the city in July."},
+    {name:"Fushimi Inari",lat:34.9671,lon:135.7727,kind:"do",note:"Thousands of vermilion torii gates up a wooded mountain. Free, open all night, and genuinely empty if you go before seven."},
+    {name:"Universal Studios Japan",lat:34.6656,lon:135.4323,kind:"do",note:"Super Nintendo World and the Harry Potter area. Buy timed entry the moment it releases or you'll queue for three hours."},
+    {name:"Mount Fuji",lat:35.3606,lon:138.7274,kind:"do",note:"Climbing season opens in July. The standard route is an overnight from the fifth station — serious, crowded, and only for the determined."},
+    {name:"Okinawa",lat:26.3344,lon:127.8056,kind:"add",note:"Two and a half hours by air from Tokyo. Coral reefs, beaches and a distinct culture — the add-on if the group wants a swimming week bolted on."}
+  ],
+  doing:[
+    {wiki:"Fushimi Inari-taisha",flickr:"fushimi+inari,kyoto",tag:"Early morning, everyone",name:"Walk up through the torii gates",
+     text:"Roughly ten thousand vermilion gates form a tunnel that climbs a mountain behind Kyoto. It's free and never closes, which means you can be there at six with nobody else on the path — and by ten it's shoulder to shoulder."},
+    {wiki:"Hiroshima Peace Memorial Museum",flickr:"hiroshima+peace+memorial",tag:"Half day, ages 12+",name:"Hiroshima Peace Memorial",
+     text:"The hardest hour of the trip and the one most worth doing with teenagers. The museum is unflinching, the park outside is calm, and the A-Bomb Dome is left exactly as it stood. Leave the afternoon unscheduled afterwards."},
+    {wiki:"Shinkansen",flickr:"shinkansen,japan",tag:"Between every city",name:"The bullet train",
+     text:"320 km/h, doors that line up with painted marks on the platform, cleaning crews that turn a train around in seven minutes. Reserve seats with luggage space for a group of twelve, and get an ekiben boxed lunch at the station before boarding."},
+    {wiki:"Nara Park",flickr:"nara+deer,japan",tag:"Day trip, everyone",name:"Nara's deer and the Great Buddha",
+     text:"Twelve hundred deer roam a public park and bow at people holding crackers. Todai-ji next door houses a 15-metre bronze Buddha under the largest wooden roof on earth. Easy half-day from Kyoto or Osaka."},
+    {wiki:"teamLab",flickr:"teamlab,tokyo",tag:"Two hours, everyone",name:"teamLab digital art",
+     text:"Rooms of projected light you walk through, some of them ankle-deep in water. Utterly teen-proof, thoroughly photographed, and tickets are timed and sell out — book the week they release."},
+    {wiki:"Dōtonbori",flickr:"dotonbori,osaka",tag:"Any evening",name:"Eat your way down Dotonbori",
+     text:"Osaka's neon canal-side strip: takoyaki, okonomiyaki, kushikatsu, and a running Glico man sign that everyone photographs. Cheap enough to feed twelve teenagers without thinking about it."},
+    {wiki:"Arashiyama",flickr:"arashiyama+bamboo,kyoto",tag:"Half day",name:"Arashiyama",
+     text:"The bamboo grove is fifteen minutes of walking and worth it before eight in the morning. Stay for the monkey park above the river and the Hozugawa boat ride down through the gorge."},
+    {wiki:"Hakone",flickr:"hakone,mount+fuji",tag:"Overnight or day trip",name:"Hot springs and Fuji views",
+     text:"A loop of cable cars, a sulphur valley and a lake with a pirate ship on it, ninety minutes from Tokyo. Stay in a ryokan with an onsen — note that many still refuse tattoos, so check before booking."}
+  ],
+  bases:[
+    {name:"Tokyo",text:"Split four nights at the start and three at the end so you're near the airport on both ends. Shinjuku and Shibuya have the best transport; Asakusa and Ueno are 30–40% cheaper and quieter. Family rooms and connecting rooms are common in the business chains.",price:"Four twin/triple rooms, ~¥55,000–95,000/night total"},
+    {name:"Kyoto",text:"Book this leg first — Kyoto sells out earlier and prices harder than anywhere else on the route. A machiya townhouse rental can sleep six to eight and puts you in a neighbourhood rather than a hotel corridor.",price:"Two machiya rentals, ~¥60,000–110,000/night total"},
+    {name:"Osaka",text:"The cheap leg. Namba puts you inside the food district and a short train from Universal. Business hotels here are half the price of Kyoto for the same room.",price:"Four rooms, ~¥40,000–70,000/night total"},
+    {name:"Hiroshima",text:"Two nights, near the station or the Peace Park. Small, walkable and inexpensive, with the Miyajima ferry 25 minutes away by local train.",price:"Four rooms, ~¥38,000–65,000/night total"}
+  ],
+  itinerary:[
+    {n:1,d:"Tokyo",h:"Land, get IC cards, eat and sleep",p:"Narita or Haneda into the city, load Suica cards for everyone, and do nothing ambitious. Convenience-store dinner is a legitimate first meal here."},
+    {n:2,d:"Tokyo",h:"Asakusa, Shibuya, Shinjuku",p:"Senso-ji temple in the morning, Shibuya crossing and the Hachiko statue in the afternoon, Omoide Yokocho for dinner."},
+    {n:3,d:"Tokyo",h:"teamLab and Akihabara",p:"Timed entry to teamLab, then Akihabara for arcades, anime and electronics. This is the day the teens run their own schedule."},
+    {n:4,d:"Hakone",h:"Day trip or overnight",p:"The Hakone loop — mountain railway, ropeway, sulphur valley, lake. An onsen ryokan overnight if you want the full version."},
+    {n:5,d:"Kyoto",h:"Shinkansen down, evening in Gion",p:"Two hours thirteen minutes from Tokyo. Check in, then walk Gion and Pontocho at dusk when the lanterns come on."},
+    {n:6,d:"Kyoto",h:"Fushimi Inari at dawn, temples after",p:"Be at the gates by six. Kiyomizu-dera and the Higashiyama lanes mid-morning, then indoors through the worst of the afternoon heat."},
+    {n:7,d:"Kyoto",h:"Arashiyama and the river",p:"Bamboo grove early, monkey park, then the Hozugawa boat ride down the gorge. Tea ceremony or a sushi-making class in the late afternoon."},
+    {n:8,d:"Nara",h:"Day trip to the deer and the Buddha",p:"Forty-five minutes from Kyoto. Todai-ji, Kasuga Taisha, and 1,200 deer. Back to Kyoto or straight on to Osaka in the evening."},
+    {n:9,d:"Osaka",h:"Universal Studios Japan",p:"Full day. Super Nintendo World needs a timed entry booked the moment it releases. Dotonbori for dinner if anyone still has legs."},
+    {n:10,d:"Osaka",h:"Castle, aquarium, food",p:"Osaka Castle park in the morning, Kaiyukan aquarium or Umeda Sky Building in the afternoon, street food all evening."},
+    {n:11,d:"Hiroshima",h:"West on the Shinkansen, Peace Park",p:"Eighty-five minutes from Shin-Osaka. Peace Memorial Museum and the park in the afternoon. Okonomiyaki, Hiroshima-style, for dinner."},
+    {n:12,d:"Miyajima",h:"The floating torii and Mount Misen",p:"Local train and a ferry. The gate, the deer, and the ropeway or the two-hour walk up Misen for the view back across the inland sea."},
+    {n:13,d:"Tokyo",h:"Four hours back, last evening",p:"The longest train of the trip. Meiji Shrine or the Sumida river cruise on arrival, then a farewell dinner."},
+    {n:14,d:"Home",h:"Fly out",p:"Allow three hours to the airport and through security. Last-minute shopping at the station rather than the terminal."}
+  ],
+  budget:{rows:[
+      ["Flights, East Coast to Tokyo","$1,200 – $1,800","Nonstop from JFK, EWR and IAD on ANA, JAL and United. Book 10–12 months out; this is the least flexible line on the sheet."],
+      ["Accommodation, 13 nights","$900 – $1,500","Business hotels, one or two machiya rentals, and a ryokan night in Hakone. Rooms are small — plan on four or five rooms, not two suites."],
+      ["Rail and local transport","$300 – $500","Shinkansen legs plus subways and IC cards. See the note below on whether the JR Pass pays off."],
+      ["Food","$450 – $800","Roughly $32–57 a head a day. Convenience stores and standing noodle bars keep lunch under $6; one good dinner a week does the rest of the damage."],
+      ["Sites, tickets and experiences","$250 – $500","Universal, teamLab, museums, the Hakone loop, a cooking class. Most temples and shrines are free or a few dollars."]],
+    total:["Per person, 14 days","$3,100 – $5,100"],
+    note:"Roughly $37,000 to $61,000 for twelve people — the most expensive option on this shortlist, driven almost entirely by airfare. On the rail pass: since the 2023 price rise, a 14-day national JR Pass costs about ¥80,000 and this exact route runs closer to ¥45,000 in point-to-point tickets, so it probably does not pay off. Worse, the pass excludes the fastest Nozomi trains without a surcharge. Price your actual legs before buying one."},
+  alt:{heading:"The cruise version, honestly compared",
+    intro:"Japan cruises do exist — Princess runs long round-trips from Yokohama, and Royal Caribbean, Celebrity and Norwegian all sail Japanese ports in summer. Fares run roughly $2,000–$3,500 a head for 10–14 nights in a balcony cabin, before flights.",
+    pro:["One unpacking, and Japanese ports the land route never reaches — Hakodate, Kanazawa, Aomori, Okinawa.",
+         "Some sailings are timed to the summer festivals, including Nebuta in Aomori in early August, which is genuinely spectacular.",
+         "Air conditioning, pools and a teen deck as a refuge from 90°F and 80% humidity, which is a real consideration here.",
+         "One reservation block for twelve people instead of four hotels, four sets of train reservations and a Universal ticket lottery."],
+    con:["Kyoto, Nara, Hakone and Nikko are all inland. The cruise gives you Japan's coastline and misses most of what people come for.",
+         "A 6-to-10-hour port call at Kobe means a rushed coach to Kyoto and back, not a day in Kyoto.",
+         "Fares are higher than the Greek equivalent and the flight is the same $1,200–$1,800 either way, so it doesn't save money.",
+         "You still lose two days to the flight, and a 14-night cruise plus flights is a longer trip than the land version."],
+    verdict:"This is the one destination where the cruise is clearly the weaker option. Japan's appeal is inland and the trains already solve the logistics a cruise is meant to solve. If somebody in the group wants a cruise, do it somewhere else on this shortlist."},
+  compare:{heading:"Three ways to do this",options:[
+    {name:"Land, 14 days",pick:true,text:"Tokyo, Kyoto, Osaka, Hiroshima on the Shinkansen. Deepest, best value per day, and the transport is a highlight rather than a cost. The default answer for Japan."},
+    {name:"Hybrid, 14 days",text:"Seven days Tokyo–Kyoto–Osaka on land, then a 7-night cruise out of Yokohama. Gets you Kyoto plus the northern ports and pool days, at roughly $4,000–$5,500 a head."},
+    {name:"Cruise, 10–14 nights",text:"Yokohama round-trip through Kobe, Hiroshima, Hakodate and Kanazawa. Costs more than the land trip, and trades Kyoto and Nara for harbour towns."}
+  ]}
+},
+
+/* ============================ GERMANY ============================ */
+{
+  id:"germany", tab:"Germany", title:"Germany",
+  theme:{dark:"#2C3440", accent:"#4A82C4", sun:"#D9A441"},
+  lede:"The military option. Space-A into Ramstein, a room at rank-based rates, a van, and five countries inside a three-hour drive. It is comfortably the cheapest trip on this shortlist — and the only one whose flights you cannot book.",
+  facts:[["Best window","Late June or late August"],["Length","12 days, one or two bases"],
+         ["Door to door","Space-A, or 8–9 hrs to Frankfurt"],["Per person","$2,000 – $3,700"]],
+  hero:{type:"radius", origin:"Ramstein Air Base", maxHours:5,
+    caption:"Drive times from Ramstein. Five countries and a Roman city sit inside the three-hour ring — but the Alps do not. Garmisch is four and a half hours away, not the two the brochures suggest, which is why this trip works better as two bases than one.",
+    points:[
+      {name:"Trier",h:1.0,t:"1 hr",deg:162},
+      {name:"Rhine Valley",h:1.25,t:"1¼ hr",deg:140},
+      {name:"Luxembourg City",h:1.5,t:"1½ hr",deg:118},
+      {name:"Heidelberg",h:1.5,t:"1½ hr",deg:96},
+      {name:"Europa-Park",h:1.75,t:"1¾ hr",deg:42},
+      {name:"Strasbourg",h:1.75,t:"1¾ hr",deg:20},
+      {name:"Munich",h:3.5,t:"3½ hr",deg:82},
+      {name:"Garmisch",h:4.5,t:"4½ hr",deg:58}
+    ]},
+  gmap:{q:"Germany", z:6},
+  map:{center:[48.7,9.2], zoom:6},
+  pinKinds:{base:{color:"#4A82C4",label:"Where you'd stay"},
+            do:{color:"#6E9F5B",label:"What you'd do"},
+            add:{color:"#D9A441",label:"Beyond the 3-hour ring"}},
+  pins:[
+    {name:"Ramstein Air Base",lat:49.4369,lon:7.6003,kind:"base",note:"The gateway and one of the two lodging options. Patriot Express from BWI plus cargo missions out of Dover, McGuire and Andrews. Commissary, food court and a passenger terminal that becomes part of the trip."},
+    {name:"Garmisch-Partenkirchen",lat:47.4917,lon:11.0955,kind:"base",note:"Edelweiss Lodge & Resort, the AFRC property in the Bavarian Alps. Rank-based rates, under-18s free on existing beds, guided tours bookable at the desk. Four and a half hours from Ramstein — plan it as a second base, not a day trip."},
+    {name:"Trier",lat:49.7596,lon:6.6439,kind:"do",note:"An hour from Ramstein and the oldest city in Germany. A Roman gate, an amphitheatre, imperial baths, and a cathedral built on Constantine's palace."},
+    {name:"Bacharach",lat:50.0567,lon:7.7700,kind:"do",note:"The Rhine Gorge's prettiest base. Half-timbered houses, vineyard footpaths, and the boat downriver past the Lorelei rock."},
+    {name:"Burg Eltz",lat:50.2050,lon:7.3367,kind:"do",note:"A castle in a wooded valley that has never been destroyed and has been in the same family for 850 years. Park and walk in; the approach is the point."},
+    {name:"Heidelberg",lat:49.3988,lon:8.6724,kind:"do",note:"Ninety minutes east. A ruined castle above a river, a long pedestrian old town, and the funicular up to the Philosophers' Walk."},
+    {name:"Luxembourg City",lat:49.6116,lon:6.1319,kind:"do",note:"Ninety minutes west and a different country. A fortress city built into a gorge, with casemate tunnels the teenagers can crawl through and free public transport nationwide."},
+    {name:"Strasbourg",lat:48.5734,lon:7.7521,kind:"do",note:"France, under two hours. Gothic cathedral with an astronomical clock, canals through Petite France, and Alsatian food that is neither French nor German."},
+    {name:"Europa-Park",lat:48.2661,lon:7.7220,kind:"do",note:"Germany's biggest theme park and the strongest teen draw within easy reach of Ramstein. Book tickets and a hotel night ahead in summer."},
+    {name:"Zugspitze",lat:47.4210,lon:10.9853,kind:"add",note:"Germany's highest point at 2,962 m, twenty minutes from Edelweiss by cog railway and cable car. Snow on the summit in July."},
+    {name:"Neuschwanstein",lat:47.5576,lon:10.7498,kind:"add",note:"The castle Disney borrowed, ninety minutes from Garmisch. Timed tickets sell out weeks ahead in summer — book the moment the window opens."},
+    {name:"Munich",lat:48.1351,lon:11.5820,kind:"add",note:"Ninety minutes from Garmisch, three and a half hours from Ramstein. Marienplatz, the Deutsches Museum, the English Garden, and Dachau half an hour outside."}
+  ],
+  doing:[
+    {wiki:"Zugspitze",flickr:"zugspitze,germany",tag:"Full day, everyone",name:"Up the Zugspitze",
+     text:"Cog railway through the mountain, then a cable car to 2,962 metres, with Austria on the far side of the summit platform. There is usually snow up there in July, which twelve people from Virginia will find funny."},
+    {wiki:"Neuschwanstein Castle",flickr:"neuschwanstein,castle",tag:"Half day",name:"Neuschwanstein",
+     text:"Ludwig II's unfinished fantasy castle on a crag above two lakes. The interior tour is 35 minutes and timed; the walk up to Marienbrücke for the view costs nothing and is the better photograph."},
+    {wiki:"Rhine Gorge",flickr:"rhine+valley,castles",tag:"Full day",name:"Down the Rhine by boat",
+     text:"Sixty-five kilometres of gorge with roughly forty castles on it, and a boat that lets you get on and off between towns. Rüdesheim to St. Goar past the Lorelei is the stretch worth doing."},
+    {wiki:"Eltz Castle",flickr:"burg+eltz,castle",tag:"Half day",name:"Burg Eltz",
+     text:"Eight hundred and fifty years in one family, never sacked, hidden in a side valley off the Moselle. You park above and walk down through the woods until it appears, which is exactly how a castle should be met."},
+    {wiki:"Heidelberg Castle",flickr:"heidelberg,castle",tag:"Full day",name:"Heidelberg",
+     text:"A half-ruined red sandstone castle above the Neckar, a 1.6-kilometre pedestrian high street below it, and the world's largest wine barrel in the cellar. Ninety minutes from Ramstein and the easiest day trip on the list."},
+    {wiki:"Europa-Park",flickr:"europa+park,rollercoaster",tag:"Full day, teens",name:"Europa-Park",
+     text:"Germany's answer to Disney, split into themed European countries, with a dozen serious roller coasters. This is the day the teenagers pick, and it is a legitimate use of a day in Europe."},
+    {wiki:"Partnach Gorge",flickr:"partnach+gorge,garmisch",tag:"Two hours",name:"Partnach Gorge",
+     text:"A 700-metre slot cut through rock by meltwater, walked on galleries bolted to the wall with the river a few feet below. Short, cheap, wet, and the best two hours in Garmisch."},
+    {wiki:"Porta Nigra",flickr:"trier,porta+nigra",tag:"Half day",name:"Roman Trier",
+     text:"A black sandstone Roman gate that has stood since about AD 170, plus an amphitheatre and imperial baths, an hour from the base. The oldest city in Germany and the least-visited thing on this list."}
+  ],
+  bases:[
+    {name:"Edelweiss Lodge & Resort",text:"The AFRC property in Garmisch, and the reason to consider Germany at all. Rank-based nightly rates, under-18s free on existing bed space, breakfast in the packages, and guided tours to Munich, Neuschwanstein and the Zugspitze booked at the desk. Books out 6–12 months ahead for summer.",price:"E7–E9 tier, ~$237/room/night · 6 rooms ≈ $1,420/night"},
+    {name:"Ramstein Inn, on base",text:"Roughly half the price and central to five countries. The catch: on-base lodging prioritises official travellers, so a retiree booking ten leisure nights is itself space-available. Have a plan B before you build the trip around it.",price:"~$100–150/room/night · 6 rooms ≈ $600–900/night"},
+    {name:"Off-base rental",text:"If military lodging doesn't come through, a Ferienwohnung or a large house near Kaiserslautern or in the Rhine Valley sleeps twelve and needs no ID. Costs more than the Inn, less than Edelweiss, and removes the booking risk entirely.",price:"One 12-guest house, ~€400–650/night"},
+    {name:"Splitting the difference",text:"Five nights near Ramstein for the Rhine, Trier, Heidelberg and Luxembourg, then five at Edelweiss for the Alps. One four-and-a-half-hour drive in the middle buys you both halves of the country.",price:"Blended, ~$1,000–1,200/night for twelve"}
+  ],
+  itinerary:[
+    {n:1,d:"Arrive",h:"Land at Ramstein, collect vans",p:"However you get here, day one is customs, three large vans, a commissary run and an early night. Sign up for the return leg now if you're flying Space-A."},
+    {n:2,d:"Settle",h:"Kaiserslautern and the base",p:"Low-key. Gartenschau park, the Wildpark deer enclosure, the food court on base. Let everyone find their feet before the driving starts."},
+    {n:3,d:"Trier",h:"Roman Germany, one hour west",p:"Porta Nigra, the amphitheatre, the imperial baths, lunch on the Hauptmarkt. Back by mid-afternoon."},
+    {n:4,d:"Rhine",h:"Castles and a boat",p:"Drive to Bacharach, take the KD boat downriver past the Lorelei to St. Goar, walk up to Rheinfels. Burg Eltz on the way home if there's daylight."},
+    {n:5,d:"Heidelberg",h:"Castle, old town, river",p:"Funicular to the castle, the great barrel, then the Philosophers' Walk across the Neckar for the view back. Long pedestrian high street for dinner."},
+    {n:6,d:"Europa-Park",h:"The teenagers' day",p:"Two hours south to Rust. Full day of coasters. Consider a night nearby rather than driving back tired."},
+    {n:7,d:"Transit",h:"Ramstein to Garmisch",p:"Four and a half hours on the A6 and A8. Break it at Ulm or Augsburg. Check into Edelweiss mid-afternoon and do nothing else."},
+    {n:8,d:"Alps",h:"Zugspitze and Partnach Gorge",p:"Cog railway and cable car to the summit in the morning, the gorge walk in the afternoon. Both are a short ride from the lodge."},
+    {n:9,d:"Castles",h:"Neuschwanstein and Linderhof",p:"Ninety minutes west. Timed castle tour, the bridge for the view, and Linderhof's grotto on the way back if anyone still has patience."},
+    {n:10,d:"Munich",h:"City day",p:"Ninety minutes north. Marienplatz and the glockenspiel, the Deutsches Museum for the teenagers, the English Garden and the surf wave. Dachau for the older ones if the group wants it."},
+    {n:11,d:"Free",h:"Alpine lakes or Austria",p:"Eibsee for swimming, the Alpspitze gondola for hiking, or Innsbruck an hour over the border. One unscheduled day per trip is not optional."},
+    {n:12,d:"Home",h:"Back to Ramstein and out",p:"Four and a half hours north, drop the vans, roll call. If Space-A doesn't come through, Frankfurt is an hour from the base."}
+  ],
+  budget:{rows:[
+      ["Flights, East Coast to Germany","$35 – $1,300","$17–35 in terminal fees if Space-A works. $900–1,300 commercial to Frankfurt or Munich if it doesn't. Budget the commercial number and treat Space-A as money you didn't spend."],
+      ["Lodging, 10 nights","$625 – $1,185","Ramstein Inn at roughly $125 per room per night, or Edelweiss at $237 in the E7–E9 tier. Six rooms either way; under-18s free on existing beds."],
+      ["Vans and fuel","$190 – $270","Three large vans or SUVs for twelve days, split twelve ways. German fuel runs roughly double US prices and the autobahn is free."],
+      ["Food","$480 – $700","Breakfast is included in the Edelweiss packages. Bakeries, the commissary and one good dinner a week keeps this at the low end."],
+      ["Sites, tours and tickets","$350 – $600","Zugspitze, Neuschwanstein, the Rhine boat, Europa-Park, Heidelberg. Edelweiss guided tours are extra unless bundled into a package."]],
+    total:["Per person, 12 days","$2,000 – $3,700"],
+    note:"Two corrections worth carrying into the group conversation. First, the widely circulated Space-A + Edelweiss estimate of about $2,255 a head doesn't add up — its own line items total closer to $2,855, and that version assumes the free flights land. Second, Garmisch is four and a half hours from Ramstein, not the two to two and a half you'll see quoted, which is why the itinerary above treats it as a second base rather than a day trip."},
+  alt:{heading:"Space-A: what it really buys you",
+    intro:"Retirees and their dependents fly Space-A as Category VI — the lowest priority, boarding after every mission, PCS and emergency-leave passenger. Registration is free on the AMC portal at 60 days out. The seats are not.",
+    pro:["Terminal fees of roughly $17–35 a head instead of $900–1,300 commercial. For twelve people that is $11,000–15,000 that stays in the group's pocket.",
+         "Ramstein has the densest AMC traffic in Europe: Patriot Express from BWI plus regular cargo missions from Dover, McGuire and Andrews.",
+         "Registering costs nothing and commits you to nothing, so you can sign up at 60 days and still be holding commercial tickets.",
+         "Base lodging, the commissary and the terminal itself turn the travel days into part of the trip rather than dead time."],
+    con:["Category VI in June, July and August is the hardest combination there is. Twelve seats on one aircraft is unlikely; plan on splitting across two or three flights or two or three days.",
+         "Eligibility does not extend to friends. Only a sponsor and that sponsor's own dependents can fly. If the other two families aren't military, Space-A moves four people and the other eight buy tickets.",
+         "The return is harder than the outbound and has no date. That is a real problem if anyone has a school start, a work Monday or a connecting flight home from the East Coast.",
+         "Lodging, vans and tours all need fixed dates. Space-A does not produce fixed dates, so something has to absorb the mismatch."],
+    verdict:"Treat Space-A as a bonus, not a plan. Book the lodging and the vans on real dates, hold cheap or refundable commercial tickets, register all twelve on the AMC portal at 60 days, and take the free seats if they appear. That way the trip survives either outcome, and the savings are upside instead of a single point of failure."},
+  compare:{heading:"One base, or two",options:[
+    {name:"Split, five and five",pick:true,text:"Ramstein first for the Rhine, Trier, Heidelberg and Luxembourg, then Garmisch for the Alps and Munich. One long drive in the middle. The only version that gets both halves of the country."},
+    {name:"Edelweiss the whole time",text:"One unpack, the Alps out the window, Munich and Neuschwanstein within ninety minutes, and guided tours you don't have to plan. But the Rhine, Trier and Luxembourg are four to five hours away and effectively off the table."},
+    {name:"Ramstein the whole time",text:"Cheapest by a wide margin and five countries inside three hours. But you skip the Alps entirely, and ten nights of on-base lodging for a retiree on leisure travel is itself space-available — it may simply not be bookable."}
+  ]}
+}
+
+];
+
+/* ===================== rendering ===================== */
+const tabsEl=document.getElementById("tabs");
+const panelsEl=document.getElementById("panels");
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* hero A — elevation cross-section (Madeira) */
+function heroProfile(){
+  const pts=[{x:40,y:1818,l:"Pico do Arieiro",s:"1,818 m — sunrise above the clouds"},
+             {x:26,y:900,l:"Levada country",s:"~900 m — level forest walking"},
+             {x:14,y:120,l:"Funchal",s:"Sea level — market, old town, marina"},
+             {x:70,y:60,l:"Porto Moniz",s:"Sea level — volcanic pools"}];
+  const W=1000,H=300,PAD=34;
+  const sx=v=>PAD+(v/100)*(W-PAD*2), sy=v=>H-PAD-(v/2000)*(H-PAD-18);
+  const path=`M ${sx(0)} ${sy(0)}
+    C ${sx(8)} ${sy(60)}, ${sx(12)} ${sy(90)}, ${sx(14)} ${sy(120)}
+    C ${sx(20)} ${sy(500)}, ${sx(24)} ${sy(820)}, ${sx(26)} ${sy(900)}
+    C ${sx(31)} ${sy(1300)}, ${sx(36)} ${sy(1750)}, ${sx(40)} ${sy(1818)}
+    C ${sx(46)} ${sy(1780)}, ${sx(52)} ${sy(1200)}, ${sx(58)} ${sy(700)}
+    C ${sx(64)} ${sy(300)}, ${sx(68)} ${sy(110)}, ${sx(70)} ${sy(60)}
+    C ${sx(76)} ${sy(30)}, ${sx(84)} ${sy(10)}, ${sx(100)} ${sy(0)}`;
+  const marks=pts.map(p=>`<g>
+      <line x1="${sx(p.x)}" y1="${sy(p.y)}" x2="${sx(p.x)}" y2="${sy(p.y)-30}" stroke="rgba(241,239,230,.5)" stroke-width="1"/>
+      <circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="5" fill="var(--sun)"/>
+      <text x="${sx(p.x)}" y="${sy(p.y)-40}" text-anchor="middle" fill="#F1EFE6" font-family="Fraunces,Georgia,serif" font-size="21" font-weight="600">${esc(p.l)}</text>
+      <text x="${sx(p.x)}" y="${sy(p.y)-20}" text-anchor="middle" fill="rgba(241,239,230,.8)" font-family="Karla,sans-serif" font-size="15">${esc(p.s)}</text>
+    </g>`).join("");
+  return `<figure class="section-figure">
+    <svg class="xsec" viewBox="0 0 ${W} ${H}" role="img" aria-label="Cross-section of Madeira from Funchal on the south coast up to Pico do Arieiro at 1,818 metres and down to Porto Moniz on the north coast.">
+      <line x1="${PAD}" y1="${sy(0)}" x2="${W-PAD}" y2="${sy(0)}" stroke="rgba(241,239,230,.4)" stroke-width="1"/>
+      <path d="${path} L ${sx(100)} ${sy(0)} Z" fill="rgba(241,239,230,.16)"/>
+      <path d="${path}" fill="none" stroke="#F1EFE6" stroke-width="2.5" stroke-linejoin="round"/>
+      ${marks}
+      <text x="${PAD}" y="${sy(0)+22}" fill="rgba(241,239,230,.68)" font-family="Karla,sans-serif" font-size="15">south coast</text>
+      <text x="${W-PAD}" y="${sy(0)+22}" text-anchor="end" fill="rgba(241,239,230,.68)" font-family="Karla,sans-serif" font-size="15">north coast</text>
+    </svg>
+    <figcaption>Madeira is 35 miles long and rises to 1,818 metres. That vertical squeeze is the whole appeal — you can be swimming at nine and walking in cloud forest at one.</figcaption>
+  </figure>`;
+}
+
+/* hero B — route and pacing (Greece, Japan) */
+function heroHops(hero){
+  const W=1000,H=250,Y=150,PAD=30;
+  const sx=v=>PAD+(v/100)*(W-PAD*2);
+  const legs=hero.legs, last=legs.length-1;
+  const links=legs.map((n,i)=>{ if(!n.in) return "";
+      const a=sx(legs[i-1].x), b=sx(n.x), mid=(a+b)/2;
+      return `<g>
+        <line x1="${a+12}" y1="${Y}" x2="${b-12}" y2="${Y}" stroke="rgba(241,239,230,.55)" stroke-width="1.5" stroke-dasharray="5 5"/>
+        <text x="${mid}" y="${Y+64}" text-anchor="middle" fill="rgba(241,239,230,.82)" font-family="Karla,sans-serif" font-size="15">${esc(n.in)}</text>
+      </g>`;}).join("");
+  const nodes=legs.map((n,i)=>`<g>
+      <circle cx="${sx(n.x)}" cy="${Y}" r="${(i===last&&!n.nights)?6:9}" fill="${(i===last&&!n.nights)?'rgba(241,239,230,.55)':'var(--sun)'}" stroke="#F1EFE6" stroke-width="2"/>
+      <text x="${sx(n.x)}" y="${Y-34}" text-anchor="middle" fill="#F1EFE6" font-family="Fraunces,Georgia,serif" font-size="24" font-weight="600">${esc(n.name)}</text>
+      <text x="${sx(n.x)}" y="${Y-14}" text-anchor="middle" fill="rgba(241,239,230,.8)" font-family="Karla,sans-serif" font-size="15">${esc(n.sub)}</text>
+      ${n.nights?`<text x="${sx(n.x)}" y="${Y+30}" text-anchor="middle" fill="var(--sun)" font-family="Karla,sans-serif" font-size="16" font-weight="500">${esc(n.nights)}</text>`:""}
+    </g>`).join("");
+  return `<figure class="section-figure">
+    <svg class="xsec" viewBox="0 0 ${W} ${H}" role="img" aria-label="Route diagram of the trip's bases, with travel time and cost between each.">
+      ${links}${nodes}
+    </svg>
+    <figcaption>${esc(hero.caption)}</figcaption>
+  </figure>`;
+}
+
+/* hero C — drive-time radius (Germany) */
+function heroRadius(hero){
+  const W=1000,H=340,OX=500,OY=300,PH=44;
+  const rad=d=>d*Math.PI/180;
+  const arcs=[1,2,3].map(h=>{const r=h*PH;
+    return `<path d="M ${OX-r} ${OY} A ${r} ${r} 0 0 1 ${OX+r} ${OY}" fill="none"
+              stroke="rgba(241,239,230,.28)" stroke-width="1" stroke-dasharray="3 5"/>
+            <text x="${OX-r}" y="${OY+19}" text-anchor="middle" fill="rgba(241,239,230,.6)"
+              font-family="Karla,sans-serif" font-size="14">${h} hr</text>`;}).join("");
+  const pts=hero.points.map(p=>{
+    const r=p.h*PH, x=OX+r*Math.cos(rad(p.deg)), y=OY-r*Math.sin(rad(p.deg));
+    const side = x>OX+30 ? 1 : (x<OX-30 ? -1 : 0);
+    const anchor = side===1?"start":side===-1?"end":"middle";
+    const lx = x + side*14, ly = side===0 ? y-16 : y+4;
+    return `<g>
+      <line x1="${OX}" y1="${OY}" x2="${x}" y2="${y}" stroke="rgba(241,239,230,.18)" stroke-width="1"/>
+      <circle cx="${x}" cy="${y}" r="5.5" fill="var(--sun)" stroke="#F1EFE6" stroke-width="1.5"/>
+      <text x="${lx}" y="${ly}" text-anchor="${anchor}" font-family="Fraunces,Georgia,serif" font-size="17" font-weight="600" fill="#F1EFE6">${esc(p.name)}<tspan font-family="Karla,sans-serif" font-size="13" font-weight="400" fill="rgba(241,239,230,.72)" dx="7">${esc(p.t)}</tspan></text>
+    </g>`;}).join("");
+  return `<figure class="section-figure">
+    <svg class="xsec" viewBox="0 0 ${W} ${H}" role="img" aria-label="Drive times from Ramstein Air Base to Trier, the Rhine Valley, Luxembourg, Heidelberg, Europa-Park, Strasbourg, Munich and Garmisch.">
+      <line x1="${OX-260}" y1="${OY}" x2="${OX+260}" y2="${OY}" stroke="rgba(241,239,230,.35)" stroke-width="1"/>
+      ${arcs}${pts}
+      <circle cx="${OX}" cy="${OY}" r="7" fill="#F1EFE6"/>
+      <text x="${OX+12}" y="${OY+19}" fill="rgba(241,239,230,.8)" font-family="Karla,sans-serif" font-size="14">${esc(hero.origin)}</text>
+    </svg>
+    <figcaption>${esc(hero.caption)}</figcaption>
+  </figure>`;
+}
+
+function renderHero(d){
+  if(d.hero.type==="hops") return heroHops(d.hero);
+  if(d.hero.type==="radius") return heroRadius(d.hero);
+  return heroProfile();
+}
+
+/* photos: Wikipedia first, keyword photo second, caption third */
+function attach(slot,src,onFail){
+  const img=new Image();
+  img.alt=slot.dataset.alt||"";
+  img.loading="lazy";
+  img.onload=()=>{slot.innerHTML="";slot.appendChild(img);slot.dataset.done="1";};
+  img.onerror=()=>{ if(onFail) onFail(); };
+  img.src=src;
+}
+function keywordFallback(slot){
+  if(slot.dataset.done) return;
+  const q=slot.dataset.q; if(!q) return;
+  attach(slot,"https://loremflickr.com/900/675/"+q+"?lock="+(slot.dataset.lock||1));
+}
+async function loadPhotos(root){
+  const slots=[...root.querySelectorAll(".shot")];
+  if(!slots.length) return;
+  slots.forEach(s=>{ if(s.dataset.photo) attach(s,s.dataset.photo,()=>keywordFallback(s)); });
+  const pending=slots.filter(s=>!s.dataset.photo);
+  if(!pending.length) return;
+  const titles=[...new Set(pending.map(s=>s.dataset.wiki).filter(Boolean))];
+  let map={},norm={};
+  try{
+    const url="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*"
+             +"&prop=pageimages&piprop=thumbnail&pithumbsize=1000&redirects=1&titles="
+             +titles.map(encodeURIComponent).join("|");
+    const j=await (await fetch(url)).json();
+    (j.query?.normalized||[]).forEach(n=>norm[n.from.toLowerCase()]=n.to);
+    (j.query?.redirects||[]).forEach(n=>norm[n.from.toLowerCase()]=n.to);
+    Object.values(j.query?.pages||{}).forEach(pg=>{
+      if(pg.thumbnail?.source) map[pg.title.toLowerCase()]=pg.thumbnail.source;
+    });
+  }catch(e){}
+  pending.forEach(s=>{
+    let t=(s.dataset.wiki||"").toLowerCase();
+    if(norm[t]) t=norm[t].toLowerCase();
+    const src=map[t];
+    if(src) attach(s,src,()=>keywordFallback(s)); else keywordFallback(s);
+  });
+}
+
+/* maps */
+function gmapSrc(q,z,type){
+  return "https://maps.google.com/maps?q="+encodeURIComponent(q)+"&t="+type+"&z="+z+"&ie=UTF8&iwloc=&output=embed";
+}
+function buildPinMap(d){
+  const slot=document.getElementById("pinmap-"+d.id);
+  if(!slot) return;
+  if(slot.dataset.ready){ slot._map && setTimeout(()=>slot._map.invalidateSize(),50); return; }
+  slot.dataset.ready="1";
+  const m=L.map(slot,{scrollWheelZoom:false}).setView(d.map.center,d.map.zoom);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:17,attribution:"&copy; OpenStreetMap"}).addTo(m);
+  const g=[];
+  d.pins.forEach(p=>{
+    const mk=L.circleMarker([p.lat,p.lon],{radius:p.kind==="base"?9:7,color:"#fff",weight:2,
+      fillColor:d.pinKinds[p.kind].color,fillOpacity:1}).addTo(m);
+    mk.bindPopup(`<div class="pin-pop"><b>${esc(p.name)}</b><small>${esc(d.pinKinds[p.kind].label)}</small>${esc(p.note)}</div>`,{maxWidth:290});
+    mk.bindTooltip(p.name,{direction:"top"});
+    g.push(mk);
+  });
+  m.fitBounds(L.featureGroup(g).getBounds().pad(0.15));
+  slot._map=m;
+  setTimeout(()=>m.invalidateSize(),80);
+}
+
+/* panel */
+function renderPanel(d){
+  const p=document.createElement("div");
+  p.id="panel-"+d.id;
+  p.setAttribute("role","tabpanel");
+
+  p.innerHTML=`
+  <section class="hero"><div class="wrap">
+    <h1>${esc(d.title)}</h1>
+    <p class="lede">${esc(d.lede)}</p>
+    ${renderHero(d)}
+  </div></section>
+
+  <div class="facts"><dl class="wrap">
+    ${d.facts.map(f=>`<div class="fact"><dt>${esc(f[0])}</dt><dd>${esc(f[1])}</dd></div>`).join("")}
+  </dl></div>
+
+  <section class="band"><div class="wrap">
+    <h2>Where this all is</h2>
+    <p class="intro">Start with the real map — pan, zoom, switch to satellite, drop into Street View. The annotated version underneath marks the places in this brochure and why each one is on the list.</p>
+    <div class="maptools">
+      <span class="lbl">Google view</span>
+      <button class="mbtn" type="button" data-type="m" aria-pressed="true">Map</button>
+      <button class="mbtn" type="button" data-type="k" aria-pressed="false">Satellite</button>
+    </div>
+    <iframe class="gmap" id="gmap-${d.id}" loading="lazy" allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade" title="Google map of ${esc(d.title)}"
+      src="${gmapSrc(d.gmap.q,d.gmap.z,'m')}"></iframe>
+    <div id="pinmap-${d.id}" class="pinmap"></div>
+    <div class="legend">
+      ${Object.values(d.pinKinds).map(k=>`<span><i style="background:${k.color}"></i>${esc(k.label)}</span>`).join("")}
+    </div>
+    <p class="caption">Tap any marker on the lower map for what it is and why it made the shortlist.</p>
+  </div></section>
+
+  <section class="band dark"><div class="wrap">
+    <h2>What you'd actually do</h2>
+    <p class="intro">Enough range that a ten-year-old and a seventeen-year-old both get a good day, without either being dragged through somebody else's holiday.</p>
+    <div class="cards">
+      ${d.doing.map((c,i)=>`
+        <article class="card"><figure>
+          <div class="shot" data-wiki="${esc(c.wiki)}" data-q="${esc(c.flickr||"")}"
+               data-photo="${esc(c.photo||"")}" data-alt="${esc(c.name)}" data-lock="${i+1}">
+            <span class="fallback">${esc(c.name)}</span>
+          </div>
+          <figcaption>
+            <p class="tagline">${esc(c.tag)}</p>
+            <h3>${esc(c.name)}</h3>
+            <p>${esc(c.text)}</p>
+          </figcaption>
+        </figure></article>`).join("")}
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <h2>Where twelve people sleep</h2>
+    <p class="intro">The real choice is how many roofs you're willing to split across, and how much moving you'll accept. Rates shift, but the gap between these places is stable.</p>
+    <div class="bases">
+      ${d.bases.map(b=>`<div class="base"><h3>${esc(b.name)}</h3><p>${esc(b.text)}</p><p class="price">${esc(b.price)}</p></div>`).join("")}
+    </div>
+  </div></section>
+
+  <section class="band dark"><div class="wrap">
+    <h2>Day by day</h2>
+    <p class="intro">One real thing a day, an afternoon that can collapse into a pool if it needs to, and no two hard days back to back.</p>
+    <div class="days">
+      ${d.itinerary.map(x=>`<div class="day">
+        <div class="n">${esc(x.n)}<small>${esc(x.d)}</small></div>
+        <div><h3>${esc(x.h)}</h3><p>${esc(x.p)}</p></div>
+      </div>`).join("")}
+    </div>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <h2>What it costs</h2>
+    <table>
+      <thead><tr><th>Line</th><th>What it covers</th><th style="text-align:right">Per person</th></tr></thead>
+      <tbody>
+        ${d.budget.rows.map(r=>`<tr><td><strong>${esc(r[0])}</strong></td><td>${esc(r[2])}</td><td class="num">${esc(r[1])}</td></tr>`).join("")}
+        <tr class="total"><td colspan="2"><strong>${esc(d.budget.total[0])}</strong></td><td class="num">${esc(d.budget.total[1])}</td></tr>
+      </tbody>
+    </table>
+    <p class="note">${esc(d.budget.note)}</p>
+  </div></section>
+
+  <section class="band dark"><div class="wrap">
+    <h2>${esc(d.alt.heading)}</h2>
+    <p class="intro">${esc(d.alt.intro)}</p>
+    <div class="twocol">
+      <div><h3>What it gets you</h3><ul>${d.alt.pro.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div><h3>What it costs you</h3><ul>${d.alt.con.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+    </div>
+    <p class="intro" style="margin-top:28px">${esc(d.alt.verdict)}</p>
+  </div></section>
+
+  <section class="band"><div class="wrap">
+    <h2>${esc(d.compare.heading)}</h2>
+    <div class="compare">
+      ${d.compare.options.map(o=>`<div class="opt${o.pick?" pick":""}"><h3>${esc(o.name)}</h3><p>${esc(o.text)}</p></div>`).join("")}
+    </div>
+  </div></section>`;
+
+  const frame=p.querySelector("#gmap-"+d.id);
+  p.querySelectorAll(".mbtn").forEach(b=>{
+    b.addEventListener("click",()=>{
+      p.querySelectorAll(".mbtn").forEach(x=>x.setAttribute("aria-pressed",x===b));
+      frame.src=gmapSrc(d.gmap.q,d.gmap.z,b.dataset.type);
+    });
+  });
+  return p;
+}
+
+function renderEmpty(){
+  const p=document.createElement("div");
+  p.id="panel-next";
+  p.setAttribute("role","tabpanel");
+  p.innerHTML=`<div class="wrap empty">
+    <h2>Nothing here yet</h2>
+    <p>Send the next destination report and it becomes a tab beside the others — same maps, same photo cards, same budget table, so the three families can compare like for like.</p>
+  </div>`;
+  return p;
+}
+
+/* tabs */
+const loaded={};
+function show(id){
+  [...tabsEl.children].forEach(b=>b.setAttribute("aria-selected",b.dataset.id===id));
+  [...panelsEl.children].forEach(x=>x.hidden=(x.id!=="panel-"+id));
+  const d=DESTINATIONS.find(x=>x.id===id);
+  if(d){
+    const r=document.documentElement.style;
+    r.setProperty("--dark",d.theme.dark);
+    r.setProperty("--accent",d.theme.accent);
+    r.setProperty("--sun",d.theme.sun);
+    buildPinMap(d);
+    if(!loaded[id]){ loaded[id]=1; loadPhotos(document.getElementById("panel-"+id)); }
+  }
+  window.scrollTo({top:0});
+}
+
+DESTINATIONS.forEach(d=>{
+  const b=document.createElement("button");
+  b.className="tab"; b.type="button"; b.setAttribute("role","tab");
+  b.dataset.id=d.id; b.textContent=d.tab;
+  b.setAttribute("aria-controls","panel-"+d.id);
+  b.addEventListener("click",()=>show(d.id));
+  tabsEl.appendChild(b);
+  panelsEl.appendChild(renderPanel(d));
+});
+
+const nb=document.createElement("button");
+nb.className="tab ghost"; nb.type="button"; nb.setAttribute("role","tab");
+nb.dataset.id="next"; nb.textContent="Next destination";
+nb.addEventListener("click",()=>show("next"));
+tabsEl.appendChild(nb);
+panelsEl.appendChild(renderEmpty());
+
+show(DESTINATIONS[0].id);
+</script>
+</body>
+</html>
