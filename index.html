@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231D4237'/%3E%3Ccircle cx='44' cy='20' r='7' fill='%23E0A33E'/%3E%3Cpath d='M6 50l14-20 10 13 8-9 20 16z' fill='%23F1EFE6'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -133,6 +134,7 @@
   .day p{font-size:.95rem}
 
   table{width:100%;border-collapse:collapse;margin-top:28px;font-size:.96rem}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
   th,td{text-align:left;padding:13px 12px 13px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--text-2)}
   th{font-weight:700;font-size:.85rem;color:var(--text-3)}
   td strong{color:var(--text)}
@@ -221,21 +223,21 @@ const DESTINATIONS = [
     {name:"Porto Santo",lat:33.0667,lon:-16.3333,kind:"add",note:"Nine kilometres of sand, two and a half hours by ferry. The obvious two-day add-on if anyone wants a beach holiday inside the adventure holiday."}
   ],
   doing:[
-    {wiki:"Levada",flickr:"levada,madeira",tag:"Half day, ages 10+",name:"Walk a levada",
+    {wiki:"Levada",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Levada%2C_Madeira_%2848807052981%29.jpg/1280px-Levada%2C_Madeira_%2848807052981%29.jpg",flickr:"levada,madeira",tag:"Half day, ages 10+",name:"Walk a levada",
      text:"Madeira is laced with hand-cut irrigation channels that contour around the mountains at a near-constant gradient. Hours of forest walking with almost no climbing — exactly what you want with a spread of ages. Pick Levada dos Balcões or Levada do Rei and skip the ones with tunnels and drop-offs."},
-    {wiki:"Porto Moniz",flickr:"porto+moniz,madeira",tag:"Half day, everyone",name:"Swim the lava pools",
+    {wiki:"Porto Moniz",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Porto_Moniz_from_the_south_2013.JPG/1280px-Porto_Moniz_from_the_south_2013.JPG",flickr:"porto+moniz,madeira",tag:"Half day, everyone",name:"Swim the lava pools",
      text:"At Porto Moniz the Atlantic fills a field of black volcanic rock. Enclosed, calm and supervised, so the ten-year-olds and the seventeen-year-olds can both be left alone in it. Bring water shoes."},
-    {wiki:"Monte, Madeira",flickr:"monte+toboggan,madeira",tag:"Half day, everyone",name:"Cable car and toboggan",
+    {wiki:"Monte, Madeira",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Toboggan_Downhill._Monte%2C_Funchal.jpg/1280px-Toboggan_Downhill._Monte%2C_Funchal.jpg",flickr:"monte+toboggan,madeira",tag:"Half day, everyone",name:"Cable car and toboggan",
      text:"Ride up over Funchal's rooftops to Monte, walk the tropical garden, then take a wicker sled two kilometres back down the public road, steered by two men in straw hats. Faintly ridiculous, and nobody forgets it."},
-    {wiki:"Whale watching",flickr:"whale+watching,madeira",tag:"3–4 hrs, everyone",name:"Get out on the water",
+    {wiki:"Whale watching",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Madeira-Atlantic-Margarita_Sunset-Whale_and_Dolphin_Watching_Tours-02ASD.jpg/1280px-Madeira-Atlantic-Margarita_Sunset-Whale_and_Dolphin_Watching_Tours-02ASD.jpg",flickr:"whale+watching,madeira",tag:"3–4 hrs, everyone",name:"Get out on the water",
      text:"Resident pilot whales and several dolphin species sit just offshore year-round, so sightings are unusually reliable. Book a smaller RIB for the teens and a catamaran if anyone in the group gets seasick."},
-    {wiki:"Pico do Arieiro",flickr:"pico+arieiro,madeira",tag:"Pre-dawn, the keen ones",name:"Sunrise above the clouds",
+    {wiki:"Pico do Arieiro",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Pico_do_Areeiro%2C_2025.jpg/1280px-Pico_do_Areeiro%2C_2025.jpg",flickr:"pico+arieiro,madeira",tag:"Pre-dawn, the keen ones",name:"Sunrise above the clouds",
      text:"Leave at 4am, drive to 1,818 metres, and watch the sun come up over a solid floor of cloud with the peaks poking through. Go with a driver so nobody handles mountain switchbacks in the dark."},
-    {wiki:"Canyoning",flickr:"canyoning,waterfall",tag:"Half day, usually 14+",name:"Canyoning",
+    {wiki:"Canyoning",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Bali_canyoning.jpg/1280px-Bali_canyoning.jpg",flickr:"canyoning,waterfall",tag:"Half day, usually 14+",name:"Canyoning",
      text:"Guided descents through the island's ravines: abseiling down waterfalls, jumping into pools, sliding rock chutes. Most operators take 14 and up, so this is the one activity that splits the group — plan a pool day for whoever stays back."},
-    {wiki:"Funchal",flickr:"funchal,madeira",tag:"Any evening",name:"Funchal old town",
+    {wiki:"Funchal",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Funchal%2C_Jardins_da_Quinta_Vigia_%28lookout%29.jpg/1280px-Funchal%2C_Jardins_da_Quinta_Vigia_%28lookout%29.jpg",flickr:"funchal,madeira",tag:"Any evening",name:"Funchal old town",
      text:"The Zona Velha's painted doors, the Mercado dos Lavradores in the morning, the CR7 museum for whoever cares, and enough restaurants at enough price points to feed twelve without booking six weeks out."},
-    {wiki:"Madeira wine",flickr:"madeira+wine,cellar",tag:"Two hours, adults",name:"A tasting for the grown-ups",
+    {wiki:"Madeira wine",photo:"https://upload.wikimedia.org/wikipedia/commons/f/f4/MadeiraWinery.jpg",flickr:"madeira+wine,cellar",tag:"Two hours, adults",name:"A tasting for the grown-ups",
      text:"Blandy's Wine Lodge in central Funchal runs short tours through the heated attics where Madeira is aged. Slot it against a pool afternoon so the parents get a turn."}
   ],
   bases:[
@@ -315,21 +317,21 @@ const DESTINATIONS = [
     {name:"Rhodes",lat:36.4349,lon:28.2176,kind:"add",note:"A walled medieval city you can still walk around, plus beaches. Too far east for the land itinerary; a highlight if you end up cruising."}
   ],
   doing:[
-    {wiki:"Acropolis of Athens",flickr:"acropolis,athens",tag:"Half day, everyone",name:"The Acropolis, early",
+    {wiki:"Acropolis of Athens",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/1029_Acropolis_of_Athens_in_Greece_at_night_Photo_by_Giles_Laurent.jpg/1280px-1029_Acropolis_of_Athens_in_Greece_at_night_Photo_by_Giles_Laurent.jpg",flickr:"acropolis,athens",tag:"Half day, everyone",name:"The Acropolis, early",
      text:"Be at the gate when it opens. By eleven the marble is hot, the crowds are three deep and nobody is enjoying themselves. Pair it with the Acropolis Museum in the afternoon — air conditioned, and it explains what you just walked through."},
-    {wiki:"Santorini",flickr:"santorini,oia",tag:"Two days",name:"The caldera",
+    {wiki:"Santorini",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Oia_sunset_-_panoramio_%282%29.jpg/1280px-Oia_sunset_-_panoramio_%282%29.jpg",flickr:"santorini,oia",tag:"Two days",name:"The caldera",
      text:"Santorini is a drowned volcano and the whole town sits on its rim. Walk the Fira-to-Oia path in the early evening, take the boat out to the crater and the hot springs, and accept that you're paying a premium for a view. Two nights is enough."},
-    {wiki:"Naxos",flickr:"naxos,beach",tag:"Four days",name:"Naxos beaches and villages",
+    {wiki:"Naxos",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Naxos_%CE%9D%CE%AC%CE%BE%CE%BF%CF%82_2020-08-20_02_Chora_Grotta_and_Vintzi_beaches.jpg/1280px-Naxos_%CE%9D%CE%AC%CE%BE%CE%BF%CF%82_2020-08-20_02_Chora_Grotta_and_Vintzi_beaches.jpg",flickr:"naxos,beach",tag:"Four days",name:"Naxos beaches and villages",
      text:"Plaka and Agios Prokopios are long, sandy and shallow. Mikri Vigla has the windsurfing and kitesurfing schools. Inland, Halki and Apiranthos are marble villages with tavernas and no bus tours. This is the leg where the trip gets cheap and relaxed."},
-    {wiki:"Knossos",flickr:"knossos,crete",tag:"Half day, ages 10+",name:"Knossos and the Minoans",
+    {wiki:"Knossos",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Knossos_-_Palace_of_the_Minoans.jpg/1280px-Knossos_-_Palace_of_the_Minoans.jpg",flickr:"knossos,crete",tag:"Half day, ages 10+",name:"Knossos and the Minoans",
      text:"Europe's oldest city, and the labyrinth story starts here. The 1900s reconstruction is controversial and also the reason it's legible to a twelve-year-old rather than a field of foundations."},
-    {wiki:"Samaria Gorge",flickr:"samaria+gorge,crete",tag:"Full day, fit walkers",name:"Walk the Samaria Gorge",
+    {wiki:"Samaria Gorge",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/%CE%A6%CE%B1%CF%81%CE%AC%CE%B3%CE%B3%CE%B9_%CE%A3%CE%B1%CE%BC%CE%B1%CF%81%CE%B9%CE%AC%CF%82.jpg/1280px-%CE%A6%CE%B1%CF%81%CE%AC%CE%B3%CE%B3%CE%B9_%CE%A3%CE%B1%CE%BC%CE%B1%CF%81%CE%B9%CE%AC%CF%82.jpg",flickr:"samaria+gorge,crete",tag:"Full day, fit walkers",name:"Walk the Samaria Gorge",
      text:"Sixteen kilometres, all downhill, through a gorge that narrows to three metres wide between 300-metre walls. It ends at a beach where you catch a boat out. The hardest thing on the list and the one people talk about afterwards."},
-    {wiki:"Chania",flickr:"chania,venetian+harbour",tag:"Two evenings",name:"Chania's old harbour",
+    {wiki:"Chania",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Aerial_view_of_the_Old_Venetian_Harbour_in_Chania%2C_Greece.jpg/1280px-Aerial_view_of_the_Old_Venetian_Harbour_in_Chania%2C_Greece.jpg",flickr:"chania,venetian+harbour",tag:"Two evenings",name:"Chania's old harbour",
      text:"A Venetian lighthouse, an Ottoman mosque, and a horseshoe of waterfront tavernas. The best place in Greece to sit twelve people down at one long table outside."},
-    {wiki:"Delos",flickr:"delos,greece",tag:"Half day",name:"Delos",
+    {wiki:"Delos",photo:"https://upload.wikimedia.org/wikipedia/commons/1/1d/Delos_general.jpg",flickr:"delos,greece",tag:"Half day",name:"Delos",
      text:"Sacred to Apollo, once the richest port in the Aegean, now an empty island of ruins with a caretaker and a boat schedule. Mosaic floors, a terrace of marble lions, and nobody living there since antiquity."},
-    {wiki:"Cape Sounion",flickr:"sounion,poseidon+temple",tag:"Evening",name:"Sunset at Sounion",
+    {wiki:"Cape Sounion",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Cape_Sounion_AC.JPG/1280px-Cape_Sounion_AC.JPG",flickr:"sounion,poseidon+temple",tag:"Evening",name:"Sunset at Sounion",
      text:"Fifteen Doric columns on a cliff above the Aegean, ninety minutes down the coast from Athens. Hire a van, go late, eat on the way back."}
   ],
   bases:[
@@ -415,21 +417,21 @@ const DESTINATIONS = [
     {name:"Okinawa",lat:26.3344,lon:127.8056,kind:"add",note:"Two and a half hours by air from Tokyo. Coral reefs, beaches and a distinct culture — the add-on if the group wants a swimming week bolted on."}
   ],
   doing:[
-    {wiki:"Fushimi Inari-taisha",flickr:"fushimi+inari,kyoto",tag:"Early morning, everyone",name:"Walk up through the torii gates",
+    {wiki:"Fushimi Inari-taisha",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine%2C_Kyoto%2C_Japan.jpg/1280px-Torii_path_with_lantern_at_Fushimi_Inari_Taisha_Shrine%2C_Kyoto%2C_Japan.jpg",flickr:"fushimi+inari,kyoto",tag:"Early morning, everyone",name:"Walk up through the torii gates",
      text:"Roughly ten thousand vermilion gates form a tunnel that climbs a mountain behind Kyoto. It's free and never closes, which means you can be there at six with nobody else on the path — and by ten it's shoulder to shoulder."},
-    {wiki:"Hiroshima Peace Memorial Museum",flickr:"hiroshima+peace+memorial",tag:"Half day, ages 12+",name:"Hiroshima Peace Memorial",
+    {wiki:"Hiroshima Peace Memorial Museum",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Hiroshima_Peace_Memorial_Museum_2009.jpg/1280px-Hiroshima_Peace_Memorial_Museum_2009.jpg",flickr:"hiroshima+peace+memorial",tag:"Half day, ages 12+",name:"Hiroshima Peace Memorial",
      text:"The hardest hour of the trip and the one most worth doing with teenagers. The museum is unflinching, the park outside is calm, and the A-Bomb Dome is left exactly as it stood. Leave the afternoon unscheduled afterwards."},
-    {wiki:"Shinkansen",flickr:"shinkansen,japan",tag:"Between every city",name:"The bullet train",
+    {wiki:"Shinkansen",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Series-N700A-F20.jpg/1280px-Series-N700A-F20.jpg",flickr:"shinkansen,japan",tag:"Between every city",name:"The bullet train",
      text:"320 km/h, doors that line up with painted marks on the platform, cleaning crews that turn a train around in seven minutes. Reserve seats with luggage space for a group of twelve, and get an ekiben boxed lunch at the station before boarding."},
-    {wiki:"Nara Park",flickr:"nara+deer,japan",tag:"Day trip, everyone",name:"Nara's deer and the Great Buddha",
+    {wiki:"Nara Park",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Nara_Park_-_panoramio_%282%29.jpg/1280px-Nara_Park_-_panoramio_%282%29.jpg",flickr:"nara+deer,japan",tag:"Day trip, everyone",name:"Nara's deer and the Great Buddha",
      text:"Twelve hundred deer roam a public park and bow at people holding crackers. Todai-ji next door houses a 15-metre bronze Buddha under the largest wooden roof on earth. Easy half-day from Kyoto or Osaka."},
-    {wiki:"teamLab",flickr:"teamlab,tokyo",tag:"Two hours, everyone",name:"teamLab digital art",
+    {wiki:"teamLab",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/TeamLab_Borderless%2C_Odaiba%2C_Tokyo%2C_Japan_%2849070645226%29.jpg/1280px-TeamLab_Borderless%2C_Odaiba%2C_Tokyo%2C_Japan_%2849070645226%29.jpg",flickr:"teamlab,tokyo",tag:"Two hours, everyone",name:"teamLab digital art",
      text:"Rooms of projected light you walk through, some of them ankle-deep in water. Utterly teen-proof, thoroughly photographed, and tickets are timed and sell out — book the week they release."},
-    {wiki:"Dōtonbori",flickr:"dotonbori,osaka",tag:"Any evening",name:"Eat your way down Dotonbori",
+    {wiki:"Dōtonbori",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Osaka_Dotonbori_Ebisu_Bridge.jpg/1280px-Osaka_Dotonbori_Ebisu_Bridge.jpg",flickr:"dotonbori,osaka",tag:"Any evening",name:"Eat your way down Dotonbori",
      text:"Osaka's neon canal-side strip: takoyaki, okonomiyaki, kushikatsu, and a running Glico man sign that everyone photographs. Cheap enough to feed twelve teenagers without thinking about it."},
-    {wiki:"Arashiyama",flickr:"arashiyama+bamboo,kyoto",tag:"Half day",name:"Arashiyama",
+    {wiki:"Arashiyama",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Arashiyama%2C_Part_II_-_Arashiyama7534.jpg/1280px-Arashiyama%2C_Part_II_-_Arashiyama7534.jpg",flickr:"arashiyama+bamboo,kyoto",tag:"Half day",name:"Arashiyama",
      text:"The bamboo grove is fifteen minutes of walking and worth it before eight in the morning. Stay for the monkey park above the river and the Hozugawa boat ride down through the gorge."},
-    {wiki:"Hakone",flickr:"hakone,mount+fuji",tag:"Overnight or day trip",name:"Hot springs and Fuji views",
+    {wiki:"Hakone",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/View_of_Mount_Fuji_from_Lake_Ashi.jpg/1280px-View_of_Mount_Fuji_from_Lake_Ashi.jpg",flickr:"hakone,mount+fuji",tag:"Overnight or day trip",name:"Hot springs and Fuji views",
      text:"A loop of cable cars, a sulphur valley and a lake with a pirate ship on it, ninety minutes from Tokyo. Stay in a ryokan with an onsen — note that many still refuse tattoos, so check before booking."}
   ],
   bases:[
@@ -519,21 +521,21 @@ const DESTINATIONS = [
     {name:"Munich",lat:48.1351,lon:11.5820,kind:"add",note:"Ninety minutes from Garmisch, three and a half hours from Ramstein. Marienplatz, the Deutsches Museum, the English Garden, and Dachau half an hour outside."}
   ],
   doing:[
-    {wiki:"Zugspitze",flickr:"zugspitze,germany",tag:"Full day, everyone",name:"Up the Zugspitze",
+    {wiki:"Zugspitze",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Zugspitze_2.JPG/1280px-Zugspitze_2.JPG",flickr:"zugspitze,germany",tag:"Full day, everyone",name:"Up the Zugspitze",
      text:"Cog railway through the mountain, then a cable car to 2,962 metres, with Austria on the far side of the summit platform. There is usually snow up there in July, which twelve people from Virginia will find funny."},
-    {wiki:"Neuschwanstein Castle",flickr:"neuschwanstein,castle",tag:"Half day",name:"Neuschwanstein",
+    {wiki:"Neuschwanstein Castle",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Schloss_Neuschwanstein_2013.jpg/1280px-Schloss_Neuschwanstein_2013.jpg",flickr:"neuschwanstein,castle",tag:"Half day",name:"Neuschwanstein",
      text:"Ludwig II's unfinished fantasy castle on a crag above two lakes. The interior tour is 35 minutes and timed; the walk up to Marienbrücke for the view costs nothing and is the better photograph."},
-    {wiki:"Rhine Gorge",flickr:"rhine+valley,castles",tag:"Full day",name:"Down the Rhine by boat",
+    {wiki:"Rhine Gorge",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/St.Goarshausen_Loreley_Burg_Katz_2016-03-27-17-13-57.jpg/1280px-St.Goarshausen_Loreley_Burg_Katz_2016-03-27-17-13-57.jpg",flickr:"rhine+valley,castles",tag:"Full day",name:"Down the Rhine by boat",
      text:"Sixty-five kilometres of gorge with roughly forty castles on it, and a boat that lets you get on and off between towns. Rüdesheim to St. Goar past the Lorelei is the stretch worth doing."},
-    {wiki:"Eltz Castle",flickr:"burg+eltz,castle",tag:"Half day",name:"Burg Eltz",
+    {wiki:"Eltz Castle",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Le_ch%C3%A2teau_d%27Eltz_%28Burg_Eltz%29_en_allemagne_%28cropped%29.jpg/1280px-Le_ch%C3%A2teau_d%27Eltz_%28Burg_Eltz%29_en_allemagne_%28cropped%29.jpg",flickr:"burg+eltz,castle",tag:"Half day",name:"Burg Eltz",
      text:"Eight hundred and fifty years in one family, never sacked, hidden in a side valley off the Moselle. You park above and walk down through the woods until it appears, which is exactly how a castle should be met."},
-    {wiki:"Heidelberg Castle",flickr:"heidelberg,castle",tag:"Full day",name:"Heidelberg",
+    {wiki:"Heidelberg Castle",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Heidelberg-2726936.jpg/1280px-Heidelberg-2726936.jpg",flickr:"heidelberg,castle",tag:"Full day",name:"Heidelberg",
      text:"A half-ruined red sandstone castle above the Neckar, a 1.6-kilometre pedestrian high street below it, and the world's largest wine barrel in the cellar. Ninety minutes from Ramstein and the easiest day trip on the list."},
-    {wiki:"Europa-Park",flickr:"europa+park,rollercoaster",tag:"Full day, teens",name:"Europa-Park",
+    {wiki:"Europa-Park",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Haupteingang_%28main_entrance%29_Europa-Park_Rust.JPG/1280px-Haupteingang_%28main_entrance%29_Europa-Park_Rust.JPG",flickr:"europa+park,rollercoaster",tag:"Full day, teens",name:"Europa-Park",
      text:"Germany's answer to Disney, split into themed European countries, with a dozen serious roller coasters. This is the day the teenagers pick, and it is a legitimate use of a day in Europe."},
-    {wiki:"Partnach Gorge",flickr:"partnach+gorge,garmisch",tag:"Two hours",name:"Partnach Gorge",
+    {wiki:"Partnach Gorge",photo:"https://upload.wikimedia.org/wikipedia/commons/8/8c/Partnachklamm.jpg",flickr:"partnach+gorge,garmisch",tag:"Two hours",name:"Partnach Gorge",
      text:"A 700-metre slot cut through rock by meltwater, walked on galleries bolted to the wall with the river a few feet below. Short, cheap, wet, and the best two hours in Garmisch."},
-    {wiki:"Porta Nigra",flickr:"trier,porta+nigra",tag:"Half day",name:"Roman Trier",
+    {wiki:"Porta Nigra",photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Porta_Nigra_morgens_%28100MP%29.jpg/1280px-Porta_Nigra_morgens_%28100MP%29.jpg",flickr:"trier,porta+nigra",tag:"Half day",name:"Roman Trier",
      text:"A black sandstone Roman gate that has stood since about AD 170, plus an amphitheatre and imperial baths, an hour from the base. The oldest city in Germany and the least-visited thing on this list."}
   ],
   bases:[
@@ -824,13 +826,13 @@ function renderPanel(d){
 
   <section class="band"><div class="wrap">
     <h2>What it costs</h2>
-    <table>
+    <div class="tablewrap"><table>
       <thead><tr><th>Line</th><th>What it covers</th><th style="text-align:right">Per person</th></tr></thead>
       <tbody>
         ${d.budget.rows.map(r=>`<tr><td><strong>${esc(r[0])}</strong></td><td>${esc(r[2])}</td><td class="num">${esc(r[1])}</td></tr>`).join("")}
         <tr class="total"><td colspan="2"><strong>${esc(d.budget.total[0])}</strong></td><td class="num">${esc(d.budget.total[1])}</td></tr>
       </tbody>
-    </table>
+    </table></div>
     <p class="note">${esc(d.budget.note)}</p>
   </div></section>
 
