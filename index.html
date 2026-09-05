@@ -690,7 +690,11 @@ function renderHero(d){
 function attach(slot,src,onFail){
   const img=new Image();
   img.alt=slot.dataset.alt||"";
-  img.loading="lazy";
+  /* No loading="lazy" here. This image is detached until onload appends it, and a
+     detached lazy image never begins loading — so the handler never fires and the
+     card stays on its placeholder forever. Verified: detached+lazy issues no request
+     at all; detached without lazy loads normally. Photos are already only fetched
+     for the tab you are looking at, so lazy bought nothing. */
   img.onload=()=>{slot.innerHTML="";slot.appendChild(img);slot.dataset.done="1";};
   img.onerror=()=>{ if(onFail) onFail(); };
   img.src=src;
